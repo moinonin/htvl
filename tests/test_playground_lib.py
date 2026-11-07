@@ -70,6 +70,44 @@ def _sample_source():
     return js[start:end]
 
 
+def _bootstrap_source():
+    """The exact Python source the page feeds to pyodide.runPython()."""
+    js = (REPO_ROOT / "playground" / "playground.js").read_text(encoding="utf-8")
+    marker = "const BOOTSTRAP_PYTHON = `"
+    assert marker in js, "BOOTSTRAP_PYTHON template literal not found"
+    start = js.index(marker) + len(marker)
+    end = js.index("`;", start)
+    return js[start:end]
+
+
+def test_bootstrap_python_is_valid():
+    """It must be executable Python as-is.
+
+    This is the regression test for the first browser run, where the
+    bootstrap had been built by string concatenation and 'def' ended up
+    after a semicolon - valid JavaScript, a SyntaxError in Python.
+    """
+    source = _bootstrap_source()
+    assert "def compile(src, modern=False):" in source
+    assert "\n    return compile_source" in source
+    # compile() raises SyntaxError on exactly the failure that shipped.
+    compile(source, "<playground bootstrap>", "exec")
+
+
+def test_bootstrap_python_actually_compiles_htvl():
+    """Executing the bootstrap must yield a working compile() function."""
+    namespace: dict = {}
+    exec(_bootstrap_source(), namespace)
+    compile_fn = namespace["compile"]
+    assert callable(compile_fn)
+    assert compile_fn("$(h 1 '' '' 'hello' '')") == (
+        '<h1 class="" id="" style="">hello</h1>\n\n'
+    )
+    assert compile_fn("$(h 1 '' '' 'hello' '')", modern=True) == (
+        "<h1>hello</h1>\n\n"
+    )
+
+
 def test_playground_sample_compiles_in_both_modes():
     compile_source = _load_lib_copy().compile_source
     sample = _sample_source()
@@ -78,5 +116,12 @@ def test_playground_sample_compiles_in_both_modes():
         html = compile_source(sample, modern=modern)
         assert html.startswith("<!DOCTYPE html>")
         assert "</html>" in html
+        # The links must show their text as link text: arguments in the
+        # content slot, not accidentally parked in id/style.
+        assert ">HTVL</a>" in html
+        assert ">Read the grammar</a>" in html
+        assert ">Toggle modern mode above</a>" in html
+        assert 'style="Read the grammar"' not in html
+        assert 'style="Toggle modern mode above"' not in html
     assert 'class=""' in compile_source(sample, modern=False)
     assert 'class=""' not in compile_source(sample, modern=True)

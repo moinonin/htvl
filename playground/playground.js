@@ -23,15 +23,26 @@ $body
     $_p
     $(ul 'actions')
       $(li '')
-        $(a 'button' 'https://github.com/moinonin/htvl' 'primary' '' '' '' 'Read the grammar')$_a
+        $(a 'button primary' 'https://github.com/moinonin/htvl' 'Read the grammar' '' '' '' 'background:#1f6feb;')$_a
       $_li
       $(li '')
-        $(a 'button' '#' '' '' '' '' 'Toggle modern mode above')$_a
+        $(a 'button' '#' 'Toggle modern mode above' '' '' '' 'background:#30363d;')$_a
       $_li
     $_ul
   $_div
 $_body
 $_htvl
+`;
+
+/* Python bootstrap: newlines matter here (a compound statement cannot follow
+ * a semicolon), so this is a template literal, never a concatenated string.
+ * tests/test_playground_lib.py extracts and executes this exact source. */
+const BOOTSTRAP_PYTHON = `import sys
+sys.path.insert(0, '/home/pyodide')
+from htvl import compile_source
+
+def compile(src, modern=False):
+    return compile_source(src, modern=modern)
 `;
 
 const editor = document.getElementById("editor");
@@ -68,20 +79,8 @@ async function installPackage(pyodide) {
     const code = await (await fetch(`lib/htvl/${name}`)).text();
     pyodide.FS.writeFile(`/home/pyodide/htvl/${name}`, code);
   }
-  pyodide.runPython(
-    "import sys; sys.path.insert(0, '/home/pyodide');" +
-      "from htvl import compile_source;" +
-      "def compile(src, modern=False):\n" +
-      "    return compile_source(src, modern=modern)\n"
-  );
+  pyodide.runPython(BOOTSTRAP_PYTHON);
   return pyodide.globals.get("compile");
-}
-
-function escapeHtml(text) {
-  return text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
 }
 
 function compileNow() {
