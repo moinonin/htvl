@@ -141,11 +141,11 @@ Errors include the file, line and column, e.g.
   indentation.
 
 The full reference — every tag signature, the variables, templates, CGI
-support — is in [docs/grammar.md](docs/grammar.md).
+support — is in [docs/grammar.md](https://github.com/moinonin/htvl/blob/master/docs/grammar.md).
 
 ### Editor support
 
-* **VS Code** — the extension lives in [`editors/vscode/`](editors/vscode/):
+* **VS Code** — the extension lives in [`editors/vscode/`](https://github.com/moinonin/htvl/blob/master/editors/vscode):
   ```bash
   cd editors/vscode
   npx @vscode/vsce package && code --install-extension htvl-*.vsix
@@ -154,7 +154,7 @@ support — is in [docs/grammar.md](docs/grammar.md).
   nested calls and HTML comments, and it is set up for comment blocks and
   indentation-based folding.
 * **Anything Pygments-based** (Sphinx, MkDocs, code renderers) — a Pygments
-  lexer ships in [`extras/pygments_htvl.py`](extras/pygments_htvl.py):
+  lexer ships in [`extras/pygments_htvl.py`](https://github.com/moinonin/htvl/blob/master/extras/pygments_htvl.py):
   ```python
   from pygments.lexers import LEXERS
   LEXERS["htvl"] = (
@@ -165,7 +165,7 @@ support — is in [docs/grammar.md](docs/grammar.md).
 
 ### Try it in the browser
 
-[`playground/`](playground/) is a fully static, server-free playground: the
+[`playground/`](https://github.com/moinonin/htvl/blob/master/playground) is a fully static, server-free playground: the
 page loads the **real Python compiler** compiled to WebAssembly with
 [Pyodide](https://pyodide.org) and compiles as you type, with a legacy/modern
 toggle. Open it from any static host:
@@ -186,10 +186,10 @@ html = compile_source("$(h 1 '' '' 'Hello' ')\n")
 
 HTVL started in 2020 as a two-line obfuscated bash script that generated HTML
 by `eval`-ing heredocs, complete with a 90-day trial timer that required
-`sudo`. That prototype is preserved untouched in [`legacy/`](legacy/) — see
-[`legacy/README.original.md`](legacy/README.original.md) for the original
+`sudo`. That prototype is preserved untouched in [`legacy/`](https://github.com/moinonin/htvl/blob/master/legacy) — see
+[`legacy/README.original.md`](https://github.com/moinonin/htvl/blob/master/legacy/README.original.md) for the original
 documentation — together with a
-[de-obfuscated copy of its compiler](docs/recovered-legacy-compiler.sh) that
+[de-obfuscated copy of its compiler](https://github.com/moinonin/htvl/blob/master/docs/recovered-legacy-compiler.sh) that
 serves as the authoritative definition of the grammar.
 
 This repository is the second act: the same language, reimplemented in Python
@@ -216,7 +216,7 @@ CI runs the suite on every push and PR: all supported Python versions
 that builds a wheel, installs it, and compiles a scaffolded project
 (`.github/workflows/tests.yml`).
 
-Release notes for v0.2.0 are in [docs/releases/v0.2.0.md](docs/releases/v0.2.0.md).
+Release notes for v0.2.0 are in [docs/releases/v0.2.0.md](https://github.com/moinonin/htvl/blob/master/docs/releases/v0.2.0.md).
 
 ### Roadmap
 
@@ -230,4 +230,4 @@ Release notes for v0.2.0 are in [docs/releases/v0.2.0.md](docs/releases/v0.2.0.m
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT — see [LICENSE](https://github.com/moinonin/htvl/blob/master/LICENSE).
