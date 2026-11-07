@@ -7,7 +7,7 @@ name = "htvl-lang"
 version = "0.2.0"
 description = "HTVL - a tiny HTML transpiler: write .htvl files, get HTML."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [{ name = "Nicholas Rotich" }, { name = "HTVL contributors" }]
 keywords = ["html", "transpiler", "static-site", "compiler", "dsl"]

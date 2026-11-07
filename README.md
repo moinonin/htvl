@@ -28,7 +28,7 @@ or run it straight from the checkout with zero installation:
 python3 -m htvl compile
 ```
 
-Python 3.9+, standard library only.
+Python 3.10+, standard library only.
 
 ## Quickstart
 
@@ -212,7 +212,7 @@ python3 -m pytest         # 136 tests, including the golden test
 ```
 
 CI runs the suite on every push and PR: all supported Python versions
-(3.9–3.13) on Linux, spot-checks on macOS and Windows, and a packaging job
+(3.10–3.13) on Linux, spot-checks on macOS and Windows, and a packaging job
 that builds a wheel, installs it, and compiles a scaffolded project
 (`.github/workflows/tests.yml`).
 
