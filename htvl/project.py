@@ -32,23 +32,27 @@ class CompileResult:
 def compile_source(
     source: str,
     templates: Optional[Dict[str, str]] = None,
+    modern: bool = False,
 ) -> str:
     """Compile HTVL source text to HTML.
 
     ``templates`` maps template names (``$headtags``, ``nav0``, ...) to their
-    HTVL source text.
+    HTVL source text. ``modern`` selects clean output (see ``htvl --help``).
     """
     document = parse(source)
-    return Emitter(templates=templates).emit(document)
+    return Emitter(templates=templates, modern=modern).emit(document)
 
 
 def compile_file(
     src: Path,
     out: Path,
     templates: Optional[Dict[str, str]] = None,
+    modern: bool = False,
 ) -> Path:
     """Compile one ``.htvl`` file to ``out``."""
-    html = compile_source(Path(src).read_text(encoding="utf-8"), templates)
+    html = compile_source(
+        Path(src).read_text(encoding="utf-8"), templates, modern=modern
+    )
     out = Path(out)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(html, encoding="utf-8")
@@ -79,12 +83,14 @@ def compile_project(
     root: Path,
     out_dir: str = "public",
     force: bool = False,
+    modern: bool = False,
 ) -> CompileResult:
     """Compile every HTVL/CAL file in ``root``.
 
     ``*.htvl`` files produce ``<out_dir>/<name>.html``; ``*.cal`` files produce
     ``cal/<name>``, a self-contained executable CGI script. ``assets/`` is
-    copied into the output directory when present.
+    copied into the output directory when present. ``modern`` switches every
+    file to clean output.
     """
     root = Path(root)
     out_path = root / out_dir
@@ -99,13 +105,17 @@ def compile_project(
         )
 
     for src in sources:
-        html = compile_source(src.read_text(encoding="utf-8"), templates)
+        html = compile_source(
+            src.read_text(encoding="utf-8"), templates, modern=modern
+        )
         if src.suffix == ".cal":
             target = root / "cal" / src.stem
             result.outputs.append(_write_cgi(src, target, html))
         else:
             target = out_path / (src.stem + ".html")
-            result.outputs.append(compile_file(src, target, templates))
+            result.outputs.append(
+                compile_file(src, target, templates, modern=modern)
+            )
 
     assets = root / "assets"
     if assets.is_dir():

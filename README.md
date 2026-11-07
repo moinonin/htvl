@@ -83,10 +83,23 @@ Then `htvl compile` produces `public/index.html`.
 
 | Command | What it does |
 | --- | --- |
-| `htvl compile [path] [-o DIR]` | Compile every `.htvl` file in `path` (default `.`) into `public/`; `.cal` files become CGI scripts in `cal/`; `assets/` is copied automatically. |
-| `htvl check FILE...` | Compile a single file to stdout — great for scripting and debugging. |
+| `htvl compile [path] [-o DIR] [--modern]` | Compile every `.htvl` file in `path` (default `.`) into `public/`; `.cal` files become CGI scripts in `cal/`; `assets/` is copied automatically. |
+| `htvl check FILE... [--modern]` | Compile a single file to stdout — great for scripting and debugging. |
 | `htvl new NAME` | Scaffold a new project. |
 | `htvl list` | Print every tag signature and built-in variable. |
+
+### Legacy vs modern output
+
+The default output is byte-identical to the original 2020 compiler (empty
+attributes and all, guarded by `tests/test_golden.py`). For new projects, pass
+`--modern` to get clean HTML: empty attributes omitted, text escaped, no
+cosmetic quirks. Same source files, same line structure — only the rendering
+changes:
+
+```text
+$(div 'container')     legacy: <div class="container" id="" style="">
+                       modern: <div class="container">
+```
 
 Errors include the file, line and column, e.g.
 `htvl: error: unknown tag 'dvi' (line 12). Run 'htvl list' to see every available tag.`

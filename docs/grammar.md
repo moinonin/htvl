@@ -68,7 +68,7 @@ compiler.
 | --- | --- | --- |
 | `h` | level, class, id, content, style | `<hN class id style>content</hN>` |
 | `div` | class, id, style | `<div class id style>` — close with `$_div` |
-| `a` | class, href, content, id, target, aria_pressed, style | `<a ...>content` — close with `$_a` |
+| `a` | class, href, content, id, target, aria_pressed, style, role | `<a ...>content` — close with `$_a` |
 | `p` | class, id, content, style | `<p ...>content` — close with `$_p` |
 | `span` | class | `<span class>` — close with `$_span` |
 | `nav` | class | `<nav class>` — close with `$_nav` |
@@ -80,7 +80,7 @@ compiler.
 | `input` | class, type, aria_label, value, placeholder, onclick | `<input .../>` (void) |
 | `btn` | class, type, value, onclick, data_toggle, data_target, style | `<button ...>` — close with `$_btn` |
 | `form` | class, action, method, style | `<form ...>` — close with `$_form` |
-| `title` | id, content | `<title id lang="en">content</title>` |
+| `title` | id, content, lang | `<title id lang="en">content</title>` |
 | `link` | rel, type, href, integrity, crossorigin | `<link ...>` (void) |
 | `script` | src, type, content | `<script ...>content</script>` |
 | `metaLink` | name, content, http_equiv | `<meta .../>` (void) |
@@ -156,7 +156,7 @@ CGI-capable web server.
 
 These oddities are intentional in v1: they keep every existing `.htvl` file
 compiling to the same bytes as before. They are all marked `[legacy]` in
-`htvl/elements.py` and are candidates for an opt-in `--modern` mode later.
+`htvl/elements.py`, and **all of them are fixed by `--modern`** (see below).
 
 1. No HTML escaping. Text and arguments are inserted verbatim (the original
    did the same). Never interpolate untrusted input into a `.cal` script.
@@ -168,13 +168,41 @@ compiling to the same bytes as before. They are all marked `[legacy]` in
 7. `title` hardcodes `lang="en"`.
 8. Unknown closing tags (`$_video`) silently emit `</video>`.
 
+## Modern output mode
+
+`--modern` (CLI) / `modern=True` (library) keeps the grammar and your source
+files **exactly as they are** — only the rendering changes:
+
+* empty attributes are omitted (`<div class="x" id="" style="">` becomes
+  `<div class="x">`)
+* text and attribute values are HTML-escaped (`<`, `>`, `&`, `"`)
+* the `[legacy]` cosmetics above are fixed: no `role=""`, no stray spaces,
+  `rel="..."`, no `type=""`, void elements lose their trailing slash
+* `a` honours its trailing `role` argument and `title` its trailing `lang`
+  argument (both ignored in legacy mode, where they didn't exist)
+
+```bash
+htvl compile --modern          # whole project
+htvl check index.htvl --modern # single file to stdout
+```
+
+```python
+from htvl import compile_source
+html = compile_source(src, modern=True)
+```
+
+Modern output has the same line structure as legacy output, so you can diff
+the two modes of the same project directly. The default stays legacy so that
+existing projects keep compiling byte-for-byte; a future major version will
+flip the default.
+
 ## CLI
 
 ```
-htvl compile [path] [-o DIR]   compile a project (default: ./ into public/)
-htvl check FILE...             compile to stdout, no project needed
-htvl new NAME                  scaffold a new project
-htvl list                      every tag and built-in variable
+htvl compile [path] [-o DIR] [--modern]   compile a project (default: ./ into public/)
+htvl check FILE... [--modern]             compile to stdout, no project needed
+htvl new NAME                             scaffold a new project
+htvl list                                 every tag and built-in variable
 ```
 
 ## Library use

@@ -21,10 +21,20 @@ _MAX_TEMPLATE_DEPTH = 8
 
 
 class Emitter:
-    """Renders HTVL documents to HTML."""
+    """Renders HTVL documents to HTML.
 
-    def __init__(self, templates: Optional[Dict[str, str]] = None) -> None:
+    ``modern=True`` switches every element to the clean rendering mode: empty
+    attributes are omitted, values are HTML-escaped and the legacy cosmetics
+    are fixed. The default keeps byte compatibility with the 2020 compiler.
+    """
+
+    def __init__(
+        self,
+        templates: Optional[Dict[str, str]] = None,
+        modern: bool = False,
+    ) -> None:
         self.templates: Dict[str, str] = dict(templates or {})
+        self.modern = modern
 
     def emit(self, document: Document) -> str:
         out: List[str] = []
@@ -101,7 +111,7 @@ class Emitter:
             raise HtvlUnknownVariableError(
                 f"{name} (template includes itself)", lineno
             )
-        nested = Emitter(self.templates)
+        nested = Emitter(self.templates, modern=self.modern)
         compiled = nested.emit(parse(self.templates[name]))
         return compiled.rstrip("\n")
 
@@ -112,9 +122,13 @@ class Emitter:
                 args.append(self._render_call(arg))
             else:
                 args.append(arg)
-        return render_call(call.name, args, call.line)
+        return render_call(call.name, args, call.line, modern=self.modern)
 
 
-def emit(document: Document, templates: Optional[Dict[str, str]] = None) -> str:
+def emit(
+    document: Document,
+    templates: Optional[Dict[str, str]] = None,
+    modern: bool = False,
+) -> str:
     """Convenience wrapper around :class:`Emitter`."""
-    return Emitter(templates=templates).emit(document)
+    return Emitter(templates=templates, modern=modern).emit(document)

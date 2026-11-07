@@ -44,6 +44,14 @@ def _build_parser() -> argparse.ArgumentParser:
         help="output directory for generated HTML (default: public)",
     )
     compile_cmd.add_argument(
+        "--modern",
+        action="store_true",
+        help=(
+            "emit clean HTML: omit empty attributes, escape text and fix "
+            "legacy cosmetic quirks (see docs/grammar.md)"
+        ),
+    )
+    compile_cmd.add_argument(
         "-q", "--quiet", action="store_true", help="only report errors"
     )
 
@@ -51,6 +59,11 @@ def _build_parser() -> argparse.ArgumentParser:
         "check", help="compile a single file and write the HTML to stdout"
     )
     check_cmd.add_argument("files", nargs="+", help=".htvl files to compile")
+    check_cmd.add_argument(
+        "--modern",
+        action="store_true",
+        help="emit clean HTML (see docs/grammar.md)",
+    )
 
     new_cmd = sub.add_parser("new", help="scaffold a new HTVL project")
     new_cmd.add_argument("name", help="directory name for the new project")
@@ -64,12 +77,14 @@ def _cmd_compile(args: argparse.Namespace) -> int:
     if not root.is_dir():
         print(f"htvl: error: '{args.path}' is not a directory", file=sys.stderr)
         return 1
-    result = compile_project(root, out_dir=args.out)
+    result = compile_project(root, out_dir=args.out, modern=args.modern)
     if not args.quiet:
         for output in result.outputs:
             print(f"htvl: compiled {output.relative_to(root)}")
         if result.copied_assets:
             print(f"htvl: copied assets -> {result.copied_assets.relative_to(root)}")
+        if args.modern:
+            print("htvl: modern mode: clean, escaped HTML")
         print(f"htvl: {len(result.outputs)} file(s) compiled")
     return 0
 
@@ -79,7 +94,11 @@ def _cmd_check(args: argparse.Namespace) -> int:
         path = Path(name)
         templates = load_templates(path.parent / "templates")
         sys.stdout.write(
-            compile_source(path.read_text(encoding="utf-8"), templates)
+            compile_source(
+                path.read_text(encoding="utf-8"),
+                templates,
+                modern=args.modern,
+            )
         )
     return 0
 
