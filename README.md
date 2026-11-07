@@ -1,46 +1,153 @@
-# HTVL 
-This is a compiler that can aid you to write HTML files faster. It can also be used to write cgi files in a convenient way. For example: First prepare your project directory as follows:
-.  
-├── assets  
-│   ├── img  
-│   │   ├── github.png  
-│   │   ├── htvl-logo.png  
-│   │   └── inzpiro_web.png  
-│   └── proto.css  
-├── htvl-compiler.sh  
-├── index.htvl  
-├── public  
-│   ├── assets  
-│   │   ├── img  
-│   │   │   ├── github.png  
-│   │   │   ├── htvl-logo.png  
-│   │   │   └── inzpiro_web.png  
-│   │   └── proto.css  
-│   └── index.html  
-└── templates  
-    ├── footer.sh  
-    ├── headtags.sh  
-    └── nav.sh  
-Where all files are as they are in the project upon clonning or downlading. 
+# HTVL — a tiny HTML transpiler
 
-# Usage
-The file with extension .htvl are the kind of files you will need to write in order to generate HTML. If you are only writing cgi the files should be executable the way .htvl file is. An example hello world htvl can be written as:  
+Write short tag calls in `.htvl` files, get plain HTML out. No build step, no
+dependencies, no framework — just a small, well-tested compiler you can read
+in an afternoon.
 
-```  
-$(h 3 '' '' 'Official Sponsor') 
+```text
+$(h 1 '' '' 'Hello HTVL' '')
 ```
-Save this as yourFileName.htvl inside the project root directory
-Within the directory run the file htvl-compiler
 
+compiles to
+
+```html
+<h1 class="" id="" style="">Hello HTVL</h1>
 ```
-$ ./htvl-compiler.sh 
+
+## Install
+
+```bash
+pip install .          # from a clone of this repository
 ```
-Of course you have to make it executable first
-This will produce
 
+or run it straight from the checkout with zero installation:
+
+```bash
+python3 -m htvl compile
 ```
-<h3 class="" id="" style="">Official Sponsor</h3> 
-```    
-You can duplicate this for all of you projects. It is faster, error free when all attention is paid, and enables you to write short code
 
+Python 3.9+, standard library only.
 
+## Quickstart
+
+```bash
+htvl new mysite        # scaffold: index.htvl, templates/, assets/
+cd mysite
+htvl compile           # writes public/index.html and copies assets/
+```
+
+A minimal project:
+
+```text
+mysite/
+├── index.htvl
+├── templates/
+│   └── headtags.htvl
+└── assets/
+```
+
+`index.htvl`:
+
+```text
+$DOCTYPE_htvl
+$htvl
+$head
+  $headtags
+$_head
+$body
+  $(nav 'navbar navbar-expand-md bg-dark navbar-dark')
+    $(a 'navbar-brand' './' 'Home' '' '' '' '')$_a
+    $(ul 'navbar-nav')
+    $_ul
+  $_nav
+
+  $(div 'container')
+    $(h 1 '' '' 'Hello HTVL' '')
+    $(p '' '' 'This page was compiled by the HTVL compiler.' '')
+    $_p
+  $_div
+$_body
+$_htvl
+```
+
+`templates/headtags.htvl`:
+
+```text
+$(title '' 'My HTVL page')
+$meta
+```
+
+Then `htvl compile` produces `public/index.html`.
+
+## Commands
+
+| Command | What it does |
+| --- | --- |
+| `htvl compile [path] [-o DIR]` | Compile every `.htvl` file in `path` (default `.`) into `public/`; `.cal` files become CGI scripts in `cal/`; `assets/` is copied automatically. |
+| `htvl check FILE...` | Compile a single file to stdout — great for scripting and debugging. |
+| `htvl new NAME` | Scaffold a new project. |
+| `htvl list` | Print every tag signature and built-in variable. |
+
+Errors include the file, line and column, e.g.
+`htvl: error: unknown tag 'dvi' (line 12). Run 'htvl list' to see every available tag.`
+
+## The language
+
+* `$(tag 'arg' ...)` — tag calls, arguments are quoted strings (or bare words),
+  nesting allowed: `$(link stylesheet 'text/css' $(bsCdn '4.3.1'))`
+* `$name` — variables such as `$head`, `$_a`, `$meta`, and your own templates
+  (`$headtags`)
+* `$_name` — explicit closing tags
+* One source line = one output line; your indentation is your HTML's
+  indentation.
+
+The full reference — every tag signature, the variables, templates, CGI
+support — is in [docs/grammar.md](docs/grammar.md).
+
+## Using it as a library
+
+```python
+from htvl import compile_source
+
+html = compile_source("$(h 1 '' '' 'Hello' ')\n")
+```
+
+## About this repository
+
+HTVL started in 2020 as a two-line obfuscated bash script that generated HTML
+by `eval`-ing heredocs, complete with a 90-day trial timer that required
+`sudo`. That prototype is preserved untouched in [`legacy/`](legacy/) — see
+[`legacy/README.original.md`](legacy/README.original.md) for the original
+documentation — together with a
+[de-obfuscated copy of its compiler](docs/recovered-legacy-compiler.sh) that
+serves as the authoritative definition of the grammar.
+
+This repository is the second act: the same language, reimplemented in Python
+as a readable, testable, dependency-free compiler:
+
+* `htvl/lexer.py` → `htvl/parser.py` → `htvl/elements.py` →
+  `htvl/emitter.py` — a classic tokenize / parse / render pipeline you can
+  actually read
+* the trial timer, the `sudo` asset copy and the silent failure modes are
+  gone; errors now name the line and column
+* `tests/test_golden.py` proves the port reproduces the original 2020 output
+  **byte for byte**, so existing `.htvl` files and `templates/*.sh` keep
+  working unchanged
+
+### Development
+
+```bash
+python3 -m pytest          # 81 tests, including the golden test
+```
+
+### Roadmap
+
+* an opt-in `--modern` mode that fixes the documented `[legacy]` output
+  quirks (no empty attributes, proper escaping, real `role` support)
+* watch mode and incremental builds
+* syntax highlighting for `.htvl` files
+* a playground on the documentation site
+
+## License
+
+MIT — see [LICENSE](LICENSE).
