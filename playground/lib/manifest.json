@@ -1,0 +1,19 @@
+{
+  "files": [
+    "__init__.py",
+    "__main__.py",
+    "cli.py",
+    "elements.py",
+    "emitter.py",
+    "errors.py",
+    "lexer.py",
+    "nodes.py",
+    "parser.py",
+    "project.py",
+    "templates.py",
+    "variables.py",
+    "watch.py"
+  ],
+  "package": "htvl",
+  "version": "0.2.0"
+}

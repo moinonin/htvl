@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HTVL playground</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <span class="logo">HTVL</span>
+      <span class="tagline">write short, get HTML</span>
+    </div>
+    <div class="controls">
+      <div class="toggle" role="group" aria-label="Output mode">
+        <button id="mode-legacy" class="mode active" type="button">legacy</button>
+        <button id="mode-modern" class="mode" type="button">modern</button>
+      </div>
+      <span id="status" class="status">loading compiler&hellip;</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="pane">
+      <div class="pane-head">
+        <h2>index.htvl</h2>
+        <span class="hint">one source line = one output line</span>
+      </div>
+      <textarea id="editor" spellcheck="false" autocomplete="off"
+        autocapitalize="off" wrap="off"></textarea>
+    </section>
+
+    <section class="pane">
+      <div class="pane-head">
+        <h2>output</h2>
+        <span id="counts" class="hint"></span>
+      </div>
+      <iframe id="preview" title="HTML preview" sandbox="allow-scripts"></iframe>
+      <pre id="output" class="output"></pre>
+    </section>
+  </main>
+
+  <footer>
+    <p>
+      The compiler is the real <code>htvl</code> Python package, compiled to
+      WebAssembly with <a href="https://pyodide.org" target="_blank"
+      rel="noreferrer">Pyodide</a> &mdash; no server involved.
+      Source: <a href="https://github.com/moinonin/htvl" target="_blank"
+      rel="noreferrer">github.com/moinonin/htvl</a>
+    </p>
+  </footer>
+
+  <script src="playground.js" defer></script>
+</body>
+</html>

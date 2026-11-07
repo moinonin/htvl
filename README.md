@@ -161,6 +161,17 @@ support — is in [docs/grammar.md](docs/grammar.md).
   ```
   Both are covered by the test suite.
 
+### Try it in the browser
+
+[`playground/`](playground/) is a fully static, server-free playground: the
+page loads the **real Python compiler** compiled to WebAssembly with
+[Pyodide](https://pyodide.org) and compiles as you type, with a legacy/modern
+toggle. Open it from any static host:
+
+```bash
+python3 -m http.server 8000 --directory playground
+```
+
 ## Using it as a library
 
 ```python
@@ -194,7 +205,7 @@ as a readable, testable, dependency-free compiler:
 ### Development
 
 ```bash
-python3 -m pytest          # 81 tests, including the golden test
+python3 -m pytest          # 136 tests, including the golden test
 ```
 
 ### Roadmap
@@ -204,7 +215,8 @@ python3 -m pytest          # 81 tests, including the golden test
 * ~~watch mode and incremental builds~~ — **done in v0.2.0** (`htvl compile --watch`)
 * ~~syntax highlighting for `.htvl` files~~ — **done in v0.2.0** (VS Code
   extension in `editors/vscode/`, Pygments lexer in `extras/`)
-* a playground on the documentation site
+* ~~a playground on the documentation site~~ — **done in v0.2.0**
+  (`playground/`, the real compiler running in-browser via Pyodide)
 
 ## License
 
