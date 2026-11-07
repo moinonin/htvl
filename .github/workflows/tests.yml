@@ -1,0 +1,76 @@
+name: tests
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  # Every supported Python version on Linux.
+  linux:
+    name: py${{ matrix.python-version }} / linux
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+      - name: Run the test suite
+        run: python -m pytest -q
+      - name: Console script smoke test
+        run: |
+          htvl --version
+          htvl list
+          htvl compile --help
+
+  # One spot-check each on the other two platforms.
+  portability:
+    name: py${{ matrix.python-version }} / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+        python-version: ["3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+      - name: Run the test suite
+        run: python -m pytest -q
+
+  # The README promises 'pip install .' works - prove it from a built wheel.
+  packaging:
+    name: packaging
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build
+        run: |
+          python -m pip install --upgrade pip build
+          python -m build
+      - name: Install the wheel and compile a project
+        run: |
+          pip install dist/*.whl
+          htvl new /tmp/smoke-site
+          cd /tmp/smoke-site
+          htvl compile --quiet
+          test -f public/index.html
+          htvl check index.htvl --modern | head -1

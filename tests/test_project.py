@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import sys
 from pathlib import Path
 
 import pytest
@@ -55,4 +56,5 @@ def test_cal_files_become_executable_cgi_scripts(tmp_path):
     text = script.read_text(encoding="utf-8")
     assert text.startswith("#!/usr/bin/env bash")
     assert "<h1" in text
-    assert os.access(script, os.X_OK)
+    if sys.platform != "win32":  # no executable bit on Windows
+        assert os.access(script, os.X_OK)

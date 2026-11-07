@@ -1,5 +1,7 @@
 # HTVL — a tiny HTML transpiler
 
+[![tests](https://github.com/moinonin/htvl/actions/workflows/tests.yml/badge.svg)](https://github.com/moinonin/htvl/actions/workflows/tests.yml)
+
 Write short tag calls in `.htvl` files, get plain HTML out. No build step, no
 dependencies, no framework — just a small, well-tested compiler you can read
 in an afternoon.
@@ -205,8 +207,16 @@ as a readable, testable, dependency-free compiler:
 ### Development
 
 ```bash
-python3 -m pytest          # 136 tests, including the golden test
+pip install -e ".[dev]"   # compiler + pytest + pygments (for the lexer tests)
+python3 -m pytest         # 136 tests, including the golden test
 ```
+
+CI runs the suite on every push and PR: all supported Python versions
+(3.9–3.13) on Linux, spot-checks on macOS and Windows, and a packaging job
+that builds a wheel, installs it, and compiles a scaffolded project
+(`.github/workflows/tests.yml`).
+
+Release notes for v0.2.0 are in [docs/releases/v0.2.0.md](docs/releases/v0.2.0.md).
 
 ### Roadmap
 

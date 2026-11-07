@@ -23,7 +23,7 @@ classifiers = [
 dependencies = []
 
 [project.optional-dependencies]
-dev = ["pytest>=7"]
+dev = ["pytest>=7", "pygments>=2.10"]
 
 [project.urls]
 Homepage = "https://github.com/moinonin/htvl"
