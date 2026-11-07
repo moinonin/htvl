@@ -200,6 +200,7 @@ flip the default.
 
 ```
 htvl compile [path] [-o DIR] [--modern]   compile a project (default: ./ into public/)
+htvl compile --watch                      compile, then recompile on every change
 htvl check FILE... [--modern]             compile to stdout, no project needed
 htvl new NAME                             scaffold a new project
 htvl list                                 every tag and built-in variable

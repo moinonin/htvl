@@ -59,6 +59,103 @@ def compile_file(
     return out
 
 
+def find_sources(root: Path) -> List[Path]:
+    """Every ``.htvl`` / ``.cal`` file directly inside ``root``."""
+    root = Path(root)
+    sources: List[Path] = []
+    for pattern in ("*.htvl", "*.cal"):
+        sources.extend(sorted(root.glob(pattern)))
+    return sources
+
+
+class ProjectBuilder:
+    """Compiles the HTVL project rooted at ``root``.
+
+    Keeping a builder around (instead of one-shot functions) lets the watcher
+    recompile just the files that changed instead of the whole project.
+    """
+
+    def __init__(
+        self,
+        root: Path,
+        out_dir: str = "public",
+        modern: bool = False,
+    ) -> None:
+        self.root = Path(root).resolve()
+        self.out_dir = out_dir
+        self.modern = modern
+        self.out_path = self.root / out_dir
+        self._templates: Optional[Dict[str, str]] = None
+
+    # -- discovery ---------------------------------------------------------
+
+    @property
+    def templates(self) -> Dict[str, str]:
+        if self._templates is None:
+            self._templates = load_templates(self.root / "templates")
+        return self._templates
+
+    def sources(self) -> List[Path]:
+        return find_sources(self.root)
+
+    def output_for(self, src: Path) -> Path:
+        """Where the compiled form of ``src`` lands."""
+        src = Path(src)
+        if src.suffix == ".cal":
+            return self.root / "cal" / src.stem
+        return self.out_path / (src.stem + ".html")
+
+    # -- compilation -------------------------------------------------------
+
+    def compile_one(self, src: Path) -> Path:
+        """Compile a single source file (used for incremental rebuilds)."""
+        src = Path(src)
+        templates = self.templates
+        html = compile_source(
+            src.read_text(encoding="utf-8"), templates, modern=self.modern
+        )
+        if src.suffix == ".cal":
+            return _write_cgi(src, self.output_for(src), html)
+        return compile_file(src, self.output_for(src), templates, self.modern)
+
+    def compile_all(self) -> CompileResult:
+        """Compile every source in the project and sync ``assets/``."""
+        result = CompileResult(source=self.root)
+        sources = self.sources()
+        if not sources:
+            raise HtvlError(
+                f"no .htvl or .cal files found in '{self.root}'. "
+                "Run 'htvl new mysite' to scaffold a project."
+            )
+        for src in sources:
+            result.outputs.append(self.compile_one(src))
+        result.copied_assets = self.sync_assets()
+        return result
+
+    def sync_assets(self) -> Optional[Path]:
+        """Copy ``assets/`` into the output directory, if it exists."""
+        assets = self.root / "assets"
+        if not assets.is_dir():
+            return None
+        destination = self.out_path / "assets"
+        if destination.exists():
+            shutil.rmtree(destination)
+        shutil.copytree(assets, destination)
+        return destination
+
+    def invalidate_templates(self) -> None:
+        """Drop cached templates so the next compile re-reads ``templates/``."""
+        self._templates = None
+
+    def remove_output(self, src: Path) -> Optional[Path]:
+        """Delete the compiled form of a source that no longer exists."""
+        target = self.output_for(src)
+        if target.exists():
+            target.unlink()
+            return target
+        return None
+
+
 def _write_cgi(src: Path, out: Path, html: str) -> Path:
     out = Path(out)
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -68,15 +165,6 @@ def _write_cgi(src: Path, out: Path, html: str) -> Path:
     )
     out.chmod(0o755)
     return out
-
-
-def find_sources(root: Path) -> List[Path]:
-    """Every ``.htvl`` / ``.cal`` file directly inside ``root``."""
-    root = Path(root)
-    sources: List[Path] = []
-    for pattern in ("*.htvl", "*.cal"):
-        sources.extend(sorted(root.glob(pattern)))
-    return sources
 
 
 def compile_project(
@@ -92,37 +180,4 @@ def compile_project(
     copied into the output directory when present. ``modern`` switches every
     file to clean output.
     """
-    root = Path(root)
-    out_path = root / out_dir
-    result = CompileResult(source=root)
-
-    templates = load_templates(root / "templates")
-    sources = find_sources(root)
-    if not sources:
-        raise HtvlError(
-            f"no .htvl or .cal files found in '{root}'. "
-            "Run 'htvl new mysite' to scaffold a project."
-        )
-
-    for src in sources:
-        html = compile_source(
-            src.read_text(encoding="utf-8"), templates, modern=modern
-        )
-        if src.suffix == ".cal":
-            target = root / "cal" / src.stem
-            result.outputs.append(_write_cgi(src, target, html))
-        else:
-            target = out_path / (src.stem + ".html")
-            result.outputs.append(
-                compile_file(src, target, templates, modern=modern)
-            )
-
-    assets = root / "assets"
-    if assets.is_dir():
-        destination = out_path / "assets"
-        if destination.exists():
-            shutil.rmtree(destination)
-        shutil.copytree(assets, destination)
-        result.copied_assets = destination
-
-    return result
+    return ProjectBuilder(root, out_dir=out_dir, modern=modern).compile_all()

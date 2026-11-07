@@ -83,7 +83,7 @@ Then `htvl compile` produces `public/index.html`.
 
 | Command | What it does |
 | --- | --- |
-| `htvl compile [path] [-o DIR] [--modern]` | Compile every `.htvl` file in `path` (default `.`) into `public/`; `.cal` files become CGI scripts in `cal/`; `assets/` is copied automatically. |
+| `htvl compile [path] [-o DIR] [--modern] [-w]` | Compile every `.htvl` file in `path` (default `.`) into `public/`; `.cal` files become CGI scripts in `cal/`; `assets/` is copied automatically. `--modern` emits clean, escaped HTML; `-w`/`--watch` keeps running and recompiles on change. |
 | `htvl check FILE... [--modern]` | Compile a single file to stdout — great for scripting and debugging. |
 | `htvl new NAME` | Scaffold a new project. |
 | `htvl list` | Print every tag signature and built-in variable. |
@@ -100,6 +100,30 @@ changes:
 $(div 'container')     legacy: <div class="container" id="" style="">
                        modern: <div class="container">
 ```
+
+### Watch mode
+
+```bash
+htvl compile --watch      # or: htvl compile -w
+```
+
+Compiles once, then keeps the output up to date as you edit:
+
+```text
+htvl: compiled public/index.html
+htvl: copied assets -> public/assets
+htvl: watching '/sites/mysite' (Ctrl-C to stop)
+htvl: compiled public/index.html        <- you saved index.htvl
+htvl: removed public/index.html         <- you deleted index.htvl
+htvl: stopped
+```
+
+Edits are incremental: changing `index.htvl` recompiles that file, changing
+anything in `templates/` rebuilds the project, changing `assets/` re-copies
+it, and deleting a source removes its output. A broken edit (an unknown tag,
+say) is reported but does not stop the watcher — fix the file and it picks up
+where it left off. No dependencies: it polls the filesystem a few times a
+second.
 
 Errors include the file, line and column, e.g.
 `htvl: error: unknown tag 'dvi' (line 12). Run 'htvl list' to see every available tag.`
@@ -157,7 +181,7 @@ python3 -m pytest          # 81 tests, including the golden test
 
 * an opt-in `--modern` mode that fixes the documented `[legacy]` output
   quirks (no empty attributes, proper escaping, real `role` support)
-* watch mode and incremental builds
+* ~~watch mode and incremental builds~~ — **done in v0.2.0** (`htvl compile --watch`)
 * syntax highlighting for `.htvl` files
 * a playground on the documentation site
 

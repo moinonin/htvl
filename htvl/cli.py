@@ -13,6 +13,7 @@ from .errors import HtvlError
 from .project import compile_project, compile_source
 from .templates import load_templates
 from .variables import VARIABLES
+from .watch import watch_project
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -54,6 +55,12 @@ def _build_parser() -> argparse.ArgumentParser:
     compile_cmd.add_argument(
         "-q", "--quiet", action="store_true", help="only report errors"
     )
+    compile_cmd.add_argument(
+        "-w",
+        "--watch",
+        action="store_true",
+        help="keep running and recompile on every change (Ctrl-C to stop)",
+    )
 
     check_cmd = sub.add_parser(
         "check", help="compile a single file and write the HTML to stdout"
@@ -77,6 +84,8 @@ def _cmd_compile(args: argparse.Namespace) -> int:
     if not root.is_dir():
         print(f"htvl: error: '{args.path}' is not a directory", file=sys.stderr)
         return 1
+    if args.watch:
+        return _cmd_watch(args)
     result = compile_project(root, out_dir=args.out, modern=args.modern)
     if not args.quiet:
         for output in result.outputs:
@@ -86,6 +95,19 @@ def _cmd_compile(args: argparse.Namespace) -> int:
         if args.modern:
             print("htvl: modern mode: clean, escaped HTML")
         print(f"htvl: {len(result.outputs)} file(s) compiled")
+    return 0
+
+
+def _cmd_watch(args: argparse.Namespace) -> int:
+    root = Path(args.path).resolve()
+
+    def say(line: str) -> None:
+        print(f"htvl: {line}")
+
+    try:
+        watch_project(root, out_dir=args.out, modern=args.modern, printer=say)
+    except KeyboardInterrupt:
+        print("htvl: stopped")
     return 0
 
 
