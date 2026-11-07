@@ -1,0 +1,34 @@
+{
+  "name": "htvl",
+  "displayName": "HTVL",
+  "description": "Syntax highlighting and editor support for HTVL (.htvl) and CAL (.cal) files - the tiny HTML transpiler.",
+  "version": "0.2.0",
+  "publisher": "moinonin",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "categories": ["Languages"],
+  "keywords": ["htvl", "html", "transpiler", "markup"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/moinonin/htvl"
+  },
+  "contributes": {
+    "languages": [
+      {
+        "id": "htvl",
+        "aliases": ["HTVL", "htvl"],
+        "extensions": [".htvl", ".cal"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "htvl",
+        "scopeName": "source.htvl",
+        "path": "./syntaxes/htvl.tmLanguage.json"
+      }
+    ]
+  }
+}

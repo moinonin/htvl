@@ -141,6 +141,26 @@ Errors include the file, line and column, e.g.
 The full reference — every tag signature, the variables, templates, CGI
 support — is in [docs/grammar.md](docs/grammar.md).
 
+### Editor support
+
+* **VS Code** — the extension lives in [`editors/vscode/`](editors/vscode/):
+  ```bash
+  cd editors/vscode
+  npx @vscode/vsce package && code --install-extension htvl-*.vsix
+  ```
+  It highlights tag calls, variables (`$head`, `$_a`), quoted/bare arguments,
+  nested calls and HTML comments, and it is set up for comment blocks and
+  indentation-based folding.
+* **Anything Pygments-based** (Sphinx, MkDocs, code renderers) — a Pygments
+  lexer ships in [`extras/pygments_htvl.py`](extras/pygments_htvl.py):
+  ```python
+  from pygments.lexers import LEXERS
+  LEXERS["htvl"] = (
+      "pygments_htvl", "HTVL", ("htvl",), ("*.htvl", "*.cal"), ()
+  )
+  ```
+  Both are covered by the test suite.
+
 ## Using it as a library
 
 ```python
@@ -182,7 +202,8 @@ python3 -m pytest          # 81 tests, including the golden test
 * an opt-in `--modern` mode that fixes the documented `[legacy]` output
   quirks (no empty attributes, proper escaping, real `role` support)
 * ~~watch mode and incremental builds~~ — **done in v0.2.0** (`htvl compile --watch`)
-* syntax highlighting for `.htvl` files
+* ~~syntax highlighting for `.htvl` files~~ — **done in v0.2.0** (VS Code
+  extension in `editors/vscode/`, Pygments lexer in `extras/`)
 * a playground on the documentation site
 
 ## License

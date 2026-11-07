@@ -1,0 +1,65 @@
+{
+  "scopeName": "source.htvl",
+  "name": "htvl",
+  "comment": "TextMate grammar for the HTVL markup language (.htvl, .cal).",
+  "patterns": [{ "include": "#expressions" }],
+  "repository": {
+    "expressions": {
+      "patterns": [
+        { "include": "#html-comment" },
+        { "include": "#call" },
+        { "include": "#array-variable" },
+        { "include": "#closing-variable" },
+        { "include": "#variable" }
+      ]
+    },
+    "html-comment": {
+      "name": "comment.block.htvl",
+      "match": "<!--[\\s\\S]*?-->"
+    },
+    "call": {
+      "begin": "\\$\\(\\s*([A-Za-z_][A-Za-z0-9_-]*)",
+      "beginCaptures": {
+        "0": { "name": "punctuation.definition.call.begin.htvl" },
+        "1": { "name": "entity.name.function.htvl" }
+      },
+      "end": "\\)",
+      "endCaptures": {
+        "0": { "name": "punctuation.definition.call.end.htvl" }
+      },
+      "patterns": [{ "include": "#argument" }, { "include": "#call" }]
+    },
+    "argument": {
+      "patterns": [
+        { "name": "string.quoted.single.htvl", "match": "'[^']*'" },
+        {
+          "name": "string.quoted.double.htvl",
+          "match": "\"(?:[^\"\\\\]|\\\\.)*\""
+        },
+        { "name": "constant.numeric.htvl", "match": "\\b\\d+(?:\\.\\d+)?\\b" }
+      ]
+    },
+    "array-variable": {
+      "match": "(\\$\\{)([A-Za-z_][A-Za-z0-9_]*)(\\[@\\]\\})",
+      "captures": {
+        "1": { "name": "punctuation.definition.variable.htvl" },
+        "2": { "name": "variable.other.htvl" },
+        "3": { "name": "punctuation.definition.variable.htvl" }
+      }
+    },
+    "closing-variable": {
+      "match": "(\\$_)([A-Za-z_][A-Za-z0-9_]*)",
+      "captures": {
+        "1": { "name": "keyword.operator.htvl" },
+        "2": { "name": "entity.name.tag.htvl" }
+      }
+    },
+    "variable": {
+      "match": "(\\$)([A-Za-z_][A-Za-z0-9_]*)",
+      "captures": {
+        "1": { "name": "keyword.operator.htvl" },
+        "2": { "name": "variable.other.htvl" }
+      }
+    }
+  }
+}
