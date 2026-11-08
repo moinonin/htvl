@@ -25,7 +25,12 @@ from imprimatur_eval.harness import (  # noqa: E402
     run_arm_c,
 )
 from imprimatur_eval.models import StubModel, load_model  # noqa: E402
-from imprimatur_eval.repair import repair_loop, touched_lines  # noqa: E402
+from imprimatur_eval.repair import (  # noqa: E402
+    allowed_region,
+    out_of_region,
+    repair_loop,
+    touched_lines,
+)
 from imprimatur_eval.report import render_results  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -69,6 +74,94 @@ def test_stub_repair_is_rule_based_and_bounded(stub):
     assert trace.iterations <= 6
     if trace.steps:
         assert all(step.lines_touched <= 6 for step in trace.steps)
+
+
+# ---------------------------------------------------------------------------
+# Window enforcement (the line-locality fix)
+# ---------------------------------------------------------------------------
+
+
+def test_allowed_region_depends_on_the_code():
+    """An unclosed tag's closer may go anywhere after the opening; a name or
+    arity error is fixed on its own line."""
+    source = "\n".join(f"line {n}" for n in range(1, 21))
+    low, high = allowed_region(
+        {"code": "UNKNOWN_TAG", "line": 10}, source
+    )
+    assert low == 5 and high == 15
+
+    low, high = allowed_region({"code": "UNCLOSED_TAG", "line": 3}, source)
+    assert low == 3 and high == 20
+
+
+def test_out_of_region_counts_escapes():
+    source = "\n".join(f"line {n}" for n in range(1, 21))
+    before = source + "\n"
+    # Change one in-region line and one far away.
+    lines = before.splitlines()
+    lines[9] = "CHANGED"      # line 10 - in region for a diagnostic on line 10
+    lines[18] = "CHANGED"     # line 19 - outside
+    after = "\n".join(lines) + "\n"
+    assert out_of_region(before, after, (5, 15)) == 1
+
+
+def test_rewriting_model_triggers_enforcement_and_is_recorded():
+    """A model that rewrites the document gets re-asked, and the surviving
+    violation is recorded rather than hidden."""
+
+    class Rewriter:
+        name = "rewriter"
+
+        def __init__(self):
+            self.calls = 0
+
+        def generate(self, intent):
+            return "$(dvi 'x')\n" + "\n".join(
+                f"  $(p '' '' 'filler {n}' '')\n  $_p" for n in range(12)
+            ) + "\n$_body\n"
+
+        def repair(self, source, diagnostic, hint):
+            self.calls += 1
+            if "outside the allowed region" in hint:
+                # The retry obeys the scope.
+                return source.replace("$(dvi", "$(h 1 '' '' ", 1)
+            # First attempt rewrites the whole document.
+            return "REWRITTEN\n" * 30
+
+        @property
+        def tokens_used(self):
+            return self.calls * 100
+
+    model = Rewriter()
+    trace = repair_loop(model, model.generate("x"), enforce_window=True)
+    assert model.calls >= 2  # re-asked at least once
+    assert any(step.enforced for step in trace.steps)
+
+
+def test_in_region_repair_is_not_re_asked():
+    """A disciplined model is never charged an extra call."""
+
+    class Disciplined:
+        name = "disciplined"
+
+        def __init__(self):
+            self.calls = 0
+
+        def generate(self, intent):
+            return "$(dvi 'x')\n"
+
+        def repair(self, source, diagnostic, hint):
+            self.calls += 1
+            return source.replace("$(dvi", "$(h 1 '' '' ", 1)
+
+        @property
+        def tokens_used(self):
+            return self.calls * 100
+
+    model = Disciplined()
+    trace = repair_loop(model, model.generate("x"), enforce_window=True)
+    assert trace.final_ok
+    assert not any(step.enforced for step in trace.steps)
 
 
 def test_load_model_rejects_unknown():

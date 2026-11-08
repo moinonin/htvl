@@ -40,6 +40,7 @@ class ArmResult:
     source: str
     iterations: Optional[int] = None
     lines_touched: Optional[int] = None
+    out_of_region: Optional[int] = None
     codes: List[str] = field(default_factory=list)
     aborted_no_progress: bool = False
 
@@ -50,6 +51,7 @@ class ArmResult:
             "tokens": self.tokens,
             "iterations": self.iterations,
             "lines_touched": self.lines_touched,
+            "out_of_region": self.out_of_region,
             "codes": self.codes,
             "aborted_no_progress": self.aborted_no_progress,
         }
@@ -94,6 +96,14 @@ class ArmReport:
             if r.lines_touched is not None
         ]
 
+    @property
+    def out_of_region(self) -> List[int]:
+        return [
+            r.out_of_region
+            for r in self.results
+            if r.out_of_region is not None
+        ]
+
     def error_codes(self) -> Dict[str, int]:
         counts: Dict[str, int] = {}
         for r in self.results:
@@ -121,6 +131,8 @@ class ArmReport:
             ),
             "median_lines_touched": _median(self.lines_touched),
             "p90_lines_touched": _percentile(self.lines_touched, 90),
+            "median_out_of_region": _median(self.out_of_region),
+            "p90_out_of_region": _percentile(self.out_of_region, 90),
             "error_codes": self.error_codes(),
         }
 
@@ -144,12 +156,19 @@ def run_arm_a(model, task: Dict) -> ArmResult:
     )
 
 
-def run_arm_b(model, task: Dict, max_iters: int = MAX_ITERS) -> ArmResult:
+def run_arm_b(
+    model,
+    task: Dict,
+    max_iters: int = MAX_ITERS,
+    enforce_window: bool = False,
+) -> ArmResult:
     """Treatment: generate, then the repair loop. Tokens are the delta across
     the whole loop, generation included."""
     start = model.tokens_used
     source = model.generate(task["intent"])
-    trace = repair_loop(model, source, max_iters=max_iters)
+    trace = repair_loop(
+        model, source, max_iters=max_iters, enforce_window=enforce_window
+    )
     return ArmResult(
         task_id=task["id"],
         intent=task["intent"],
@@ -158,6 +177,7 @@ def run_arm_b(model, task: Dict, max_iters: int = MAX_ITERS) -> ArmResult:
         source=trace.final_source,
         iterations=trace.iterations,
         lines_touched=trace.total_lines_touched,
+        out_of_region=trace.total_out_of_region,
         codes=[step.diagnostic["code"] for step in trace.steps],
         aborted_no_progress=trace.aborted_no_progress,
     )
@@ -197,10 +217,13 @@ def evaluate(
     arm_c: bool = False,
     max_iters: int = MAX_ITERS,
     ablation_k: int = 3,
+    strict_window: bool = False,
 ) -> Dict:
     """Run every task in every requested arm and return one report dict.
 
-    Arm A always runs (it is the baseline); Arms B and C are opt-in.
+    Arm A always runs (it is the baseline); Arms B and C are opt-in. With
+    ``strict_window`` a second treatment arm runs with scope enforcement, so
+    the same tasks are measured with and without the discipline.
     """
     control = ArmReport("control", [run_arm_a(model, t) for t in tasks])
     treatment = (
@@ -208,6 +231,17 @@ def evaluate(
             "treatment", [run_arm_b(model, t, max_iters) for t in tasks]
         )
         if with_oracle
+        else None
+    )
+    treatment_strict = (
+        ArmReport(
+            "treatment_strict",
+            [
+                run_arm_b(model, t, max_iters, enforce_window=True)
+                for t in tasks
+            ],
+        )
+        if with_oracle and strict_window
         else None
     )
     ablation = (
@@ -221,6 +255,12 @@ def evaluate(
     if treatment is not None:
         report["arms"]["treatment"] = treatment.summary()
         per_task["treatment"] = [r.as_dict() for r in treatment.results]
+    if treatment_strict is not None:
+        report["arms"]["treatment_strict"] = treatment_strict.summary()
+        per_task["treatment_strict"] = [
+            r.as_dict() for r in treatment_strict.results
+        ]
+        report["contrast_strict"] = _ratio(treatment_strict, control)
     if ablation is not None:
         report["arms"]["ablation"] = ablation.summary()
         per_task["ablation"] = [r.as_dict() for r in ablation.results]

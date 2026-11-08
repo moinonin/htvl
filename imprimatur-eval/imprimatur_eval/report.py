@@ -79,6 +79,12 @@ def render_results(report: Dict) -> str:
             f"| ablation (best-of-k) | {ablation['compile_rate']:.2f} "
             f"| {ablation['tokens']} | **{_fmt(ablation['tokens_per_correct_doc'])}** |"
         )
+    if "treatment_strict" in arms:
+        strict = arms["treatment_strict"]
+        lines.append(
+            f"| treatment, window-enforced | {strict['compile_rate']:.2f} "
+            f"| {strict['tokens']} | **{_fmt(strict['tokens_per_correct_doc'])}** |"
+        )
     lines.append("")
     lines.append(
         f"**R = C_treatment / C_control = {_fmt(contrast.get('ratio_R'))}** "
@@ -87,6 +93,17 @@ def render_results(report: Dict) -> str:
     lines.append("")
     lines.append(f"**Decision verdict: {contrast.get('verdict', 'n/a')}**")
     lines.append("")
+    strict_contrast = report.get("contrast_strict")
+    if strict_contrast:
+        lines.append(
+            f"Window-enforced treatment: C = "
+            f"{_fmt(strict_contrast.get('tokens_per_correct_treatment'))}, "
+            f"R = {_fmt(strict_contrast.get('ratio_R'))} "
+            f"(CI {_fmt(strict_contrast.get('ci95'))}) - the same loop with "
+            "repairs re-asked when they edit outside the region the "
+            "diagnostic permits."
+        )
+        lines.append("")
 
     lines.append("## 3. Secondary - McNemar on paired correctness")
     lines.append("")
@@ -119,6 +136,26 @@ def render_results(report: Dict) -> str:
             f"- Lines touched per repair: median {_fmt(_median(touched))}, "
             f"p90 {_fmt(_percentile(touched, 90))}"
         )
+        escaped = [
+            r["out_of_region"]
+            for r in per_task["treatment"]
+            if r.get("out_of_region") is not None
+        ]
+        lines.append(
+            f"- Lines edited outside the allowed region: median "
+            f"{_fmt(_median(escaped))}, p90 {_fmt(_percentile(escaped, 90))}"
+        )
+        if "treatment_strict" in per_task:
+            escaped_strict = [
+                r["out_of_region"]
+                for r in per_task["treatment_strict"]
+                if r.get("out_of_region") is not None
+            ]
+            lines.append(
+                f"- ... with window enforcement: median "
+                f"{_fmt(_median(escaped_strict))}, p90 "
+                f"{_fmt(_percentile(escaped_strict, 90))}"
+            )
         median_touched = _median(touched)
         if median_touched is not None and median_touched > 10:
             lines.append("")

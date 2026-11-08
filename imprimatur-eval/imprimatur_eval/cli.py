@@ -94,6 +94,7 @@ def _cmd_ab(args: argparse.Namespace) -> int:
         with_oracle=True,
         arm_c=args.arm_c,
         max_iters=args.max_iters,
+        strict_window=args.strict_window,
     )
     report["manifest"] = {
         "model": args.model,
@@ -111,6 +112,7 @@ def _cmd_ab(args: argparse.Namespace) -> int:
         else None,
         "recorded_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "mode": "modern=True everywhere",
+        "strict_window": args.strict_window,
     }
     text = render_results(report)
     Path(args.report).parent.mkdir(parents=True, exist_ok=True)
@@ -165,6 +167,10 @@ def _build_parser() -> argparse.ArgumentParser:
     ab_cmd.add_argument("--arm-c", action="store_true", help="also run the best-of-k ablation")
     ab_cmd.add_argument("--json-out", dest="json_out", default=None,
                         help="also write the raw report dict as JSON")
+    ab_cmd.add_argument("--strict-window", action="store_true",
+                        help="also run a treatment arm whose repairs are "
+                             "re-asked when they edit outside the region the "
+                             "diagnostic permits")
     ab_cmd.set_defaults(func=_cmd_ab)
     return parser
 
