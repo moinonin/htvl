@@ -111,3 +111,68 @@ stdlib. Every dependency is declared, and the install is a single
 **Did:** the parity test writes a temp file and runs the real CLI against it,
 then compares stdout with `imprimatur.check(...).html` byte for byte. No
 compiler change.
+
+### D9 — Two additive extensions to the oracle contract
+
+**Brief:** the `Code` enum and `Diagnostic` dataclass as sketched.
+**Found:** (a) the compiler raises `HtvlUnknownVariableError` (`$nope`) — a
+real, distinct failure class with no code in the enum; (b) `explain()` needs
+the offending token, and the sketch's `Diagnostic` carries only prose.
+**Did:** added `Code.UNKNOWN_VARIABLE` and an optional `detail` field (the
+tag/variable name). Both are additive: the nine brief codes keep their names
+and meanings, and no consumer that only reads `code`/`line` is affected.
+
+### D10 — `Code` is `str, Enum`, not `StrEnum`
+
+**Brief (sketch):** `class Code(StrEnum)`.
+**Found:** `StrEnum` is Python 3.11+; the package floor is 3.10 (the repo's
+`requires-python`, and the CI matrix).
+**Did:** `class Code(str, Enum)` — same string behaviour, 3.10-compatible.
+
+### D11 — Structural analysis runs only on parseable source
+
+**Brief:** one error at a time for the repair loop.
+**Found:** running the balance scan on unparseable input produces noise — e.g.
+`$(p 'x` (an unterminated string) also looked like an unclosed `p`, and the
+alphabetically-earlier `UNCLOSED_TAG` masked the actionable
+`UNTERMINATED_STR`.
+**Did:** when the compile step reports any diagnostic, that diagnostic is
+returned and structural analysis is skipped; balance checking runs only when
+the source parses. The repair loop converges one real error at a time.
+
+### D12 — `HtvlArityError` never sets `.line`
+
+**Brief (recon Q5):** failures are named by line.
+**Found:** `HtvlArityError.__init__` formats the line into its message but
+does not assign `self.line`, so `.line` raises `AttributeError` — the only
+`HtvlError` without it. The oracle needs the position.
+**Did:** the oracle re-derives it from the compiler's own parse tree
+(`htvl.parser.parse`) by locating the over-long call — no prose scraping.
+Proposed upstream patch (NOT applied; the compiler is not forked):
+
+```diff
+--- a/htvl/errors.py
++++ b/htvl/errors.py
+@@ class HtvlArityError(HtvlError):
+         self.expected = expected
+         self.got = got
++        self.line = line
+```
+
+### D13 — Balance scanning tracks variables as well as tag calls
+
+**Found while testing the oracle:** the first structural version flagged
+`$head`/`$body`/`$htvl` documents with three `UNEXPECTED_CLOSE` errors,
+because containers opened by *variables* (`$head`, closed by `$_head`) were
+invisible to a scanner that only knew `$(tag ...)` calls.
+**Did:** the scanner tracks both forms, with an explicit `VAR_CONTAINERS` set
+(`head`, `body`, `htvl`, `p`, `ul`, `div`, `svg`, `strong`). `$br` is excluded:
+`<br>` is void and its `$_br` closer is legacy cruft.
+
+### D14 — `check()` validates one source string; templates are out of scope
+
+**Found:** the 2020 example references `$headtags` (a project template), so
+checking it as a bare string reports `UNKNOWN_VARIABLE: headtags`.
+**Did:** accepted as correct behaviour — an agent generating a document has no
+project templates, and the diagnostic's hint ("define it in templates/") is
+actionable. Self-contained documents are the agent-facing contract.
