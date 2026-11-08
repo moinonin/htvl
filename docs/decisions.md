@@ -255,3 +255,16 @@ brief's layout), so Python cannot import it from the root by default.
 **Found:** argparse `--in` is fine, but the dest cannot be `args.in` — `in`
 is a Python keyword, so `args.in` is a `SyntaxError`.
 **Did:** `dest="in_path"` with `args.in_path`.
+
+### D23 — Balance scanning walks the parse tree, not the text
+
+**Found during the first real-model run (Stage 4):** the structural scanner
+was regex-based, so ``$(p '' '' 'updated at $(span '12:00')' '')`` — a call
+*nested inside a quoted argument* — was read as an unclosed ``span``. The
+compiler's own lexer correctly treats it as text. The false positive also
+distorts the experiment's error-code distribution (Stage 4's primary data).
+**Did:** `imprimatur/structural.py` now walks `htvl.parser.parse`'s token
+stream: `Call` tokens open containers, `Var` tokens whose name starts with
+`_` close them (or are variable-opened containers), and `Text` tokens are
+ignored — which is exactly the quoting rule the regex lacked. Regression
+test added.

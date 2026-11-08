@@ -14,6 +14,8 @@ pipeline runs in CI; it is excluded from all reported results (protocol §5.3).
 from __future__ import annotations
 
 import hashlib
+import json
+from pathlib import Path
 from typing import Dict, List, Protocol, runtime_checkable
 
 import imprimatur
@@ -217,12 +219,141 @@ class StubModel:
         return self._tokens
 
 
+class OllamaModel:
+    """A real model: a local Ollama server (stdlib urllib, no SDK).
+
+    This is the model the Stage 4 measurement runs on. Local inference means
+    no API keys, no network egress and no spend - and it is one of the
+    brief's four scenarios (regulated teams that must run the model
+    on-machine).
+
+    Token accounting uses the counts Ollama reports (prompt_eval_count +
+    eval_count), so ``tokens_used`` is measured, not estimated.
+    """
+
+    def __init__(
+        self,
+        model: str = "qwen2.5-coder:7b-instruct",
+        base_url: str = "http://localhost:11434",
+        temperature: float = 0.0,
+        timeout: float = 300.0,
+    ) -> None:
+        self.model = model
+        self.base_url = base_url.rstrip("/")
+        self.temperature = temperature
+        self.timeout = timeout
+        self.name = f"ollama/{model}"
+        self._tokens = 0
+        self.calls = 0
+
+    # -- transport ---------------------------------------------------------
+
+    def _post(self, path: str, payload: dict) -> dict:
+        import urllib.request
+
+        request = urllib.request.Request(
+            f"{self.base_url}{path}",
+            data=json.dumps(payload).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with urllib.request.urlopen(
+            request, timeout=self.timeout
+        ) as response:
+            return json.loads(response.read().decode("utf-8"))
+
+    def _chat(self, prompt: str) -> str:
+        data = self._post(
+            "/api/generate",
+            {
+                "model": self.model,
+                "prompt": prompt,
+                "stream": False,
+                "options": {"temperature": self.temperature},
+            },
+        )
+        self.calls += 1
+        self._tokens += data.get("prompt_eval_count", 0) + data.get(
+            "eval_count", 0
+        )
+        return data.get("response", "")
+
+    # -- Model protocol ----------------------------------------------------
+
+    def generate(self, intent: str) -> str:
+        prompt = _load_prompt("base.md").replace(
+            "{tags}", "\n".join(imprimatur.tag_signatures())
+        )
+        return extract_htvl(self._chat(f"{prompt}\nIntent: {intent}\n"))
+
+    def repair(self, source: str, diagnostic: dict, hint: str) -> str:
+        template = _load_prompt("repair.md")
+        prompt = (
+            template.replace("{code}", str(diagnostic.get("code", "")))
+            .replace("{line}", str(diagnostic.get("line", "")))
+            .replace("{hint}", hint)
+            .replace(
+                "{windowed_source}",
+                numbered_window(source, diagnostic.get("line", 0)),
+            )
+        )
+        return extract_htvl(self._chat(prompt))
+
+    @property
+    def tokens_used(self) -> int:
+        return self._tokens
+
+
+def _load_prompt(name: str) -> str:
+    path = Path(__file__).resolve().parent.parent / "prompts" / name
+    return path.read_text(encoding="utf-8")
+
+
+def numbered_window(source: str, line: int, context: int = 5) -> str:
+    """The source with line numbers and the offending line marked - the edit
+    scope the repair prompt asks the model to stay inside."""
+    lines = source.splitlines()
+    if not lines:
+        return source
+    low = max(1, line - context)
+    high = min(len(lines), line + context)
+    rendered = []
+    for number in range(low, high + 1):
+        marker = ">>" if number == line else "  "
+        rendered.append(f"{marker} {number:>4} | {lines[number - 1]}")
+    return "\n".join(rendered)
+
+
+def extract_htvl(response: str) -> str:
+    """Pull the document out of a model reply.
+
+    Models wrap output in fences or add prose; the compiler wants source.
+    Prefer the first fenced block that looks like HTVL, else the whole reply.
+    """
+    import re
+
+    blocks = re.findall(r"```(?:\w*)\n([\s\S]*?)```", response)
+    for block in blocks:
+        if "$(" in block or "$h" in block or "$DOCTYPE" in block:
+            return block.strip("\n") + "\n"
+    stripped = response.strip()
+    if "$(" in stripped or "$DOCTYPE" in stripped:
+        return stripped + "\n"
+    return stripped
+
+
 def load_model(name: str) -> Model:
-    """Resolve a model adapter by name. 'stub' is the only keyless option;
-    anything else is a plug-in point for a real backend (see README)."""
+    """Resolve a model adapter by name.
+
+    ``stub`` is the deterministic plumbing model. ``ollama/<model>`` runs a
+    local Ollama server (no keys, no spend). The name is resolved here so the
+    CLI never grows a branch per backend.
+    """
     if name == "stub":
         return StubModel()
+    if name.startswith("ollama/"):
+        return OllamaModel(model=name.split("/", 1)[1])
     raise SystemExit(
-        f"unknown model '{name}'. 'stub' ships with the harness; implement the "
-        "Model protocol (imprimatur_eval.models) to plug in a real backend."
+        f"unknown model '{name}'. Use 'stub' or 'ollama/<model>' (a local "
+        "Ollama model), or implement the Model protocol in models.py."
     )

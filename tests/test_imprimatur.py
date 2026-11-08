@@ -194,6 +194,14 @@ def test_the_2020_examples_unclosed_span_is_caught():
     assert span.line == 4  # the line $(span 'navbar-toggler-icon') sits on
 
 
+def test_construct_inside_a_quoted_argument_is_not_a_construct():
+    """D23: the scanner walks the parse tree, so a $(tag ...) that appears
+    inside a quoted argument - or a $_div inside prose - is text, not a
+    construct. A regex scan once reported a false UNCLOSED_TAG here."""
+    source = "$(p '' '' 'updated at $(span '12:00') - see $_div docs' '')\n$_p\n"
+    assert check(source).ok is True
+
+
 def test_inline_close_on_one_line_balances():
     assert check("$(a 'x' './' 'Go' '' '' '' '')$_a\n").ok is True
 

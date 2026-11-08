@@ -8,8 +8,10 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import List, Optional
 
@@ -18,6 +20,16 @@ from .models import StubModel, load_model
 from .repair import repair_loop, sft_records, trace_to_jsonl_record
 
 DEFAULT_TASKS = Path(__file__).resolve().parent.parent / "tasks.jsonl"
+_PROTOCOL_PATH = (
+    Path(__file__).resolve().parent.parent.parent / "docs" / "EXPERIMENT.md"
+)
+
+
+def _sha256(path: Path) -> Optional[str]:
+    try:
+        return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+    except OSError:
+        return None
 
 
 def _write_jsonl(path: Path, rows: List[dict]) -> None:
@@ -85,11 +97,20 @@ def _cmd_ab(args: argparse.Namespace) -> int:
     )
     report["manifest"] = {
         "model": args.model,
+        "model_adapter": type(model).__name__,
+        "temperature": getattr(model, "temperature", None),
         "tasks": str(args.tasks),
+        "tasks_sha256": _sha256(Path(args.tasks)),
         "n_tasks": len(tasks),
         "max_iters": args.max_iters,
         "ablation": args.arm_c,
         "arm_c_k": 3,
+        "protocol": _PROTOCOL_PATH,
+        "protocol_sha256": _sha256(_PROTOCOL_PATH)
+        if _PROTOCOL_PATH.exists()
+        else None,
+        "recorded_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "mode": "modern=True everywhere",
     }
     text = render_results(report)
     Path(args.report).write_text(text, encoding="utf-8")
