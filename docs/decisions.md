@@ -176,3 +176,43 @@ checking it as a bare string reports `UNKNOWN_VARIABLE: headtags`.
 **Did:** accepted as correct behaviour — an agent generating a document has no
 project templates, and the diagnostic's hint ("define it in templates/") is
 actionable. Self-contained documents are the agent-facing contract.
+
+### D15 — `mcp` pinned to the v1 line
+
+**Found:** the MCP ecosystem moved to 2.x, which renamed `FastMCP` to
+`MCPServer` (`from mcp.server.mcpserver import MCPServer`) and changed other
+APIs. The brief's server sketch targets v1.
+**Did:** `mcp>=1.2,<2` in `htvl-mcp` (verified against 1.30.0). The server is
+a thin adapter, so a future v2 migration is a contained change: swap the
+import, keep the two tools and two resources. Nothing else in the repository
+touches the SDK.
+
+### D16 — The three packages form a uv workspace
+
+**Brief:** `uvx htvl-mcp` installable; three packages in one repo.
+**Found:** `htvl-mcp` depends on `imprimatur`, which depends on `htvl-lang`,
+and none are on PyPI yet. Relative `tool.uv.sources` paths resolve against the
+workspace root, not the member directory, so `path = "../imprimatur"` fails.
+**Did:** declared `[tool.uv.workspace] members = ["imprimatur", "htvl-mcp"]` at
+the repo root and `{ workspace = true }` sources in the members. Verified:
+`uv tool run --from ./htvl-mcp htvl-mcp --selftest` builds all three and runs.
+
+### D17 — `imprimatur` maps its package onto its own directory
+
+**Found:** `imprimatur/` is simultaneously the project root (holds
+`pyproject.toml`) and the package (holds `__init__.py`), so the default
+setuptools layout fails with "package directory 'imprimatur' does not exist".
+**Did:** `[tool.setuptools.package-dir] imprimatur = "."`. Verified by
+building the wheel through uv. (The alternative — `imprimatur/imprimatur/` —
+would break the repository's flat `import imprimatur` used everywhere.)
+
+### D18 — Verified over the real protocol, not just in-process
+
+**Brief:** contract and adversarial tests.
+**Did:** beyond `tests/test_mcp.py` (which drives FastMCP's dispatch in
+process), the server was exercised as a real subprocess: a stdio JSON-RPC
+session ran `initialize`, `tools/list` (exactly `check_htvl` and `list_tags`),
+`resources/read htvl://tags`, and `tools/call` on both a broken source
+(`ok=false`, `UNKNOWN_TAG`) and a valid one (`ok=true`, HTML). The adversarial
+prompt-injection case is asserted in the test suite: the text compiles and no
+file appears.

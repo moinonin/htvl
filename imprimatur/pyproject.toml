@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "imprimatur"
+version = "1.0.0"
+description = "The oracle: HTVL source in, structured line-local diagnostics out."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{ name = "Nicholas Rotich" }, { name = "HTVL contributors" }]
+keywords = ["htvl", "html", "validation", "diagnostics", "oracle"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Compilers",
+    "Topic :: Text Processing :: Markup :: HTML",
+]
+dependencies = ["htvl-lang"]
+
+[project.optional-dependencies]
+dev = ["pytest>=7"]
+
+[project.urls]
+Homepage = "https://github.com/moinonin/htvl"
+Repository = "https://github.com/moinonin/htvl"
+"Bug Tracker" = "https://github.com/moinonin/htvl/issues"
+
+[tool.setuptools]
+packages = ["imprimatur"]
+
+# This project's root *is* the package (imprimatur/__init__.py sits next to
+# pyproject.toml), so map the package onto the project directory itself.
+[tool.setuptools.package-dir]
+imprimatur = "."
+
+# The compiler is a sibling package in this repository's uv workspace.
+[tool.uv.sources]
+htvl-lang = { workspace = true }

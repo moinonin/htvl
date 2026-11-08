@@ -28,7 +28,13 @@ classifiers = [
 dependencies = []
 
 [project.optional-dependencies]
-dev = ["pytest>=7", "pygments>=2.10"]
+dev = [
+    "pytest>=7",
+    "pytest-asyncio>=0.21",
+    "pygments>=2.10",
+    # htvl-mcp's only dependency; needed for tests/test_mcp.py.
+    "mcp>=1.2,<2",
+]
 
 [project.urls]
 Homepage = "https://github.com/moinonin/htvl"
@@ -45,3 +51,9 @@ packages = ["htvl"]
 [tool.pytest.ini_options]
 pythonpath = ["."]
 testpaths = ["tests"]
+asyncio_default_fixture_loop_scope = "function"
+
+# Imprimatur, htvl-mcp and imprimatur-eval are sibling packages in this
+# repository; the workspace lets uv resolve them by name without PyPI.
+[tool.uv.workspace]
+members = ["imprimatur", "htvl-mcp"]
