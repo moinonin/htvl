@@ -1,0 +1,1175 @@
+{
+  "arms": {
+    "control": {
+      "arm": "control",
+      "n": 20,
+      "correct": 2,
+      "compile_rate": 0.1,
+      "tokens": 169188,
+      "tokens_per_correct_doc": 84594.0,
+      "mean_iterations": null,
+      "median_lines_touched": null,
+      "p90_lines_touched": null,
+      "error_codes": {
+        "UNCLOSED_TAG": 82,
+        "UNKNOWN_TAG": 5,
+        "BAD_ARG_COUNT": 4
+      }
+    },
+    "treatment": {
+      "arm": "treatment",
+      "n": 20,
+      "correct": 5,
+      "compile_rate": 0.25,
+      "tokens": 71014,
+      "tokens_per_correct_doc": 14202.8,
+      "mean_iterations": 5.25,
+      "median_lines_touched": 71.0,
+      "p90_lines_touched": 91.2,
+      "error_codes": {
+        "UNCLOSED_TAG": 49,
+        "BAD_ARG_COUNT": 29,
+        "UNKNOWN_TAG": 8,
+        "UNEXPECTED_CLOSE": 4
+      }
+    },
+    "ablation": {
+      "arm": "ablation",
+      "n": 20,
+      "correct": 2,
+      "compile_rate": 0.1,
+      "tokens": 44919,
+      "tokens_per_correct_doc": 22459.5,
+      "mean_iterations": null,
+      "median_lines_touched": null,
+      "p90_lines_touched": null,
+      "error_codes": {
+        "UNCLOSED_TAG": 246,
+        "UNKNOWN_TAG": 15,
+        "BAD_ARG_COUNT": 12
+      }
+    }
+  },
+  "contrast": {
+    "tokens_per_correct_control": 84594.0,
+    "tokens_per_correct_treatment": 14202.8,
+    "ratio_R": 0.1679,
+    "ci95": [
+      0.0686,
+      0.3838
+    ],
+    "verdict": "SUPPORT",
+    "mcnemar": {
+      "both_correct": 2,
+      "control_only": 0,
+      "treatment_only": 3,
+      "neither": 15
+    }
+  },
+  "contrast_ablation_vs_control": {
+    "tokens_per_correct_control": 84594.0,
+    "tokens_per_correct_treatment": 22459.5,
+    "ratio_R": 0.2655,
+    "ci95": [
+      0.2036,
+      0.3517
+    ],
+    "verdict": "SUPPORT"
+  },
+  "contrast_ablation_vs_treatment": {
+    "tokens_per_correct_control": 14202.8,
+    "tokens_per_correct_treatment": 22459.5,
+    "ratio_R": 1.5813,
+    "ci95": [
+      0.6065,
+      4.3104
+    ],
+    "verdict": "INCONCLUSIVE"
+  },
+  "per_task": {
+    "control": [
+      {
+        "task_id": "T01",
+        "correct": false,
+        "tokens": 638,
+        "iterations": null,
+        "lines_touched": null,
+        "codes": [
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T02",
+        "correct": false,
+        "tokens": 1300,
+        "iterations": null,
+        "lines_touched": null,
+        "codes": [
+          "UNKNOWN_TAG"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T03",
+        "correct": false,
+        "tokens": 2149,
+        "iterations": null,
+        "lines_touched": null,
+        "codes": [
+          "UNKNOWN_TAG"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T04",
+        "correct": false,
+        "tokens": 2846,
+        "iterations": null,
+        "lines_touched": null,
+        "codes": [
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T05",
+        "correct": false,
+        "tokens": 3634,
+        "iterations": null,
+        "lines_touched": null,
+        "codes": [
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T06",
+        "correct": false,
+        "tokens": 4374,
+        "iterations": null,
+        "lines_touched": null,
+        "codes": [
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T07",
+        "correct": false,
+        "tokens": 5419,
+        "iterations": null,
+        "lines_touched": null,
+        "codes": [
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T08",
+        "correct": false,
+        "tokens": 6318,
+        "iterations": null,
+        "lines_touched": null,
+        "codes": [
+          "UNKNOWN_TAG"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T09",
+        "correct": false,
+        "tokens": 7165,
+        "iterations": null,
+        "lines_touched": null,
+        "codes": [
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T10",
+        "correct": false,
+        "tokens": 7939,
+        "iterations": null,
+        "lines_touched": null,
+        "codes": [
+          "UNKNOWN_TAG"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T11",
+        "correct": true,
+        "tokens": 9072,
+        "iterations": null,
+        "lines_touched": null,
+        "codes": [],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T12",
+        "correct": false,
+        "tokens": 10110,
+        "iterations": null,
+        "lines_touched": null,
+        "codes": [
+          "BAD_ARG_COUNT"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T13",
+        "correct": false,
+        "tokens": 10897,
+        "iterations": null,
+        "lines_touched": null,
+        "codes": [
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T14",
+        "correct": true,
+        "tokens": 11588,
+        "iterations": null,
+        "lines_touched": null,
+        "codes": [],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T15",
+        "correct": false,
+        "tokens": 12328,
+        "iterations": null,
+        "lines_touched": null,
+        "codes": [
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T16",
+        "correct": false,
+        "tokens": 13073,
+        "iterations": null,
+        "lines_touched": null,
+        "codes": [
+          "UNKNOWN_TAG"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T17",
+        "correct": false,
+        "tokens": 13944,
+        "iterations": null,
+        "lines_touched": null,
+        "codes": [
+          "BAD_ARG_COUNT"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T18",
+        "correct": false,
+        "tokens": 14730,
+        "iterations": null,
+        "lines_touched": null,
+        "codes": [
+          "BAD_ARG_COUNT"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T19",
+        "correct": false,
+        "tokens": 15475,
+        "iterations": null,
+        "lines_touched": null,
+        "codes": [
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T20",
+        "correct": false,
+        "tokens": 16189,
+        "iterations": null,
+        "lines_touched": null,
+        "codes": [
+          "BAD_ARG_COUNT"
+        ],
+        "aborted_no_progress": false
+      }
+    ],
+    "treatment": [
+      {
+        "task_id": "T01",
+        "correct": true,
+        "tokens": 1639,
+        "iterations": 3,
+        "lines_touched": 35,
+        "codes": [
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T02",
+        "correct": false,
+        "tokens": 3125,
+        "iterations": 6,
+        "lines_touched": 51,
+        "codes": [
+          "UNKNOWN_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T03",
+        "correct": false,
+        "tokens": 4012,
+        "iterations": 6,
+        "lines_touched": 79,
+        "codes": [
+          "UNKNOWN_TAG",
+          "UNKNOWN_TAG",
+          "UNKNOWN_TAG",
+          "UNKNOWN_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T04",
+        "correct": false,
+        "tokens": 3686,
+        "iterations": 6,
+        "lines_touched": 54,
+        "codes": [
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T05",
+        "correct": false,
+        "tokens": 3798,
+        "iterations": 6,
+        "lines_touched": 78,
+        "codes": [
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T06",
+        "correct": false,
+        "tokens": 3467,
+        "iterations": 6,
+        "lines_touched": 71,
+        "codes": [
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T07",
+        "correct": true,
+        "tokens": 3772,
+        "iterations": 6,
+        "lines_touched": 91,
+        "codes": [
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T08",
+        "correct": true,
+        "tokens": 3448,
+        "iterations": 6,
+        "lines_touched": 93,
+        "codes": [
+          "UNKNOWN_TAG",
+          "UNKNOWN_TAG",
+          "UNKNOWN_TAG",
+          "UNKNOWN_TAG",
+          "UNKNOWN_TAG",
+          "UNCLOSED_TAG"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T09",
+        "correct": false,
+        "tokens": 3291,
+        "iterations": 6,
+        "lines_touched": 71,
+        "codes": [
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T10",
+        "correct": false,
+        "tokens": 4707,
+        "iterations": 6,
+        "lines_touched": 64,
+        "codes": [
+          "UNKNOWN_TAG",
+          "BAD_ARG_COUNT",
+          "BAD_ARG_COUNT",
+          "BAD_ARG_COUNT",
+          "BAD_ARG_COUNT",
+          "BAD_ARG_COUNT"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T11",
+        "correct": true,
+        "tokens": 1133,
+        "iterations": 0,
+        "lines_touched": 0,
+        "codes": [],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T12",
+        "correct": false,
+        "tokens": 5204,
+        "iterations": 6,
+        "lines_touched": 110,
+        "codes": [
+          "BAD_ARG_COUNT",
+          "BAD_ARG_COUNT",
+          "BAD_ARG_COUNT",
+          "BAD_ARG_COUNT",
+          "BAD_ARG_COUNT",
+          "BAD_ARG_COUNT"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T13",
+        "correct": false,
+        "tokens": 3532,
+        "iterations": 6,
+        "lines_touched": 56,
+        "codes": [
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T14",
+        "correct": true,
+        "tokens": 691,
+        "iterations": 0,
+        "lines_touched": 0,
+        "codes": [],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T15",
+        "correct": false,
+        "tokens": 2967,
+        "iterations": 6,
+        "lines_touched": 59,
+        "codes": [
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T16",
+        "correct": false,
+        "tokens": 3281,
+        "iterations": 6,
+        "lines_touched": 76,
+        "codes": [
+          "UNKNOWN_TAG",
+          "UNKNOWN_TAG",
+          "UNEXPECTED_CLOSE",
+          "UNEXPECTED_CLOSE",
+          "UNEXPECTED_CLOSE",
+          "UNEXPECTED_CLOSE"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T17",
+        "correct": false,
+        "tokens": 5469,
+        "iterations": 6,
+        "lines_touched": 87,
+        "codes": [
+          "BAD_ARG_COUNT",
+          "BAD_ARG_COUNT",
+          "BAD_ARG_COUNT",
+          "BAD_ARG_COUNT",
+          "BAD_ARG_COUNT",
+          "BAD_ARG_COUNT"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T18",
+        "correct": false,
+        "tokens": 5028,
+        "iterations": 6,
+        "lines_touched": 85,
+        "codes": [
+          "BAD_ARG_COUNT",
+          "BAD_ARG_COUNT",
+          "BAD_ARG_COUNT",
+          "BAD_ARG_COUNT",
+          "BAD_ARG_COUNT",
+          "BAD_ARG_COUNT"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T19",
+        "correct": false,
+        "tokens": 3337,
+        "iterations": 6,
+        "lines_touched": 77,
+        "codes": [
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T20",
+        "correct": false,
+        "tokens": 5427,
+        "iterations": 6,
+        "lines_touched": 63,
+        "codes": [
+          "BAD_ARG_COUNT",
+          "BAD_ARG_COUNT",
+          "BAD_ARG_COUNT",
+          "BAD_ARG_COUNT",
+          "BAD_ARG_COUNT",
+          "BAD_ARG_COUNT"
+        ],
+        "aborted_no_progress": false
+      }
+    ],
+    "ablation": [
+      {
+        "task_id": "T01",
+        "correct": false,
+        "tokens": 1914,
+        "iterations": null,
+        "lines_touched": null,
+        "codes": [
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T02",
+        "correct": false,
+        "tokens": 1986,
+        "iterations": null,
+        "lines_touched": null,
+        "codes": [
+          "UNKNOWN_TAG",
+          "UNKNOWN_TAG",
+          "UNKNOWN_TAG"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T03",
+        "correct": false,
+        "tokens": 2547,
+        "iterations": null,
+        "lines_touched": null,
+        "codes": [
+          "UNKNOWN_TAG",
+          "UNKNOWN_TAG",
+          "UNKNOWN_TAG"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T04",
+        "correct": false,
+        "tokens": 2091,
+        "iterations": null,
+        "lines_touched": null,
+        "codes": [
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T05",
+        "correct": false,
+        "tokens": 2364,
+        "iterations": null,
+        "lines_touched": null,
+        "codes": [
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T06",
+        "correct": false,
+        "tokens": 2220,
+        "iterations": null,
+        "lines_touched": null,
+        "codes": [
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T07",
+        "correct": false,
+        "tokens": 3135,
+        "iterations": null,
+        "lines_touched": null,
+        "codes": [
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T08",
+        "correct": false,
+        "tokens": 2697,
+        "iterations": null,
+        "lines_touched": null,
+        "codes": [
+          "UNKNOWN_TAG",
+          "UNKNOWN_TAG",
+          "UNKNOWN_TAG"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T09",
+        "correct": false,
+        "tokens": 2541,
+        "iterations": null,
+        "lines_touched": null,
+        "codes": [
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T10",
+        "correct": false,
+        "tokens": 2322,
+        "iterations": null,
+        "lines_touched": null,
+        "codes": [
+          "UNKNOWN_TAG",
+          "UNKNOWN_TAG",
+          "UNKNOWN_TAG"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T11",
+        "correct": true,
+        "tokens": 1133,
+        "iterations": null,
+        "lines_touched": null,
+        "codes": [],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T12",
+        "correct": false,
+        "tokens": 3114,
+        "iterations": null,
+        "lines_touched": null,
+        "codes": [
+          "BAD_ARG_COUNT",
+          "BAD_ARG_COUNT",
+          "BAD_ARG_COUNT"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T13",
+        "correct": false,
+        "tokens": 2361,
+        "iterations": null,
+        "lines_touched": null,
+        "codes": [
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T14",
+        "correct": true,
+        "tokens": 691,
+        "iterations": null,
+        "lines_touched": null,
+        "codes": [],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T15",
+        "correct": false,
+        "tokens": 2220,
+        "iterations": null,
+        "lines_touched": null,
+        "codes": [
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T16",
+        "correct": false,
+        "tokens": 2235,
+        "iterations": null,
+        "lines_touched": null,
+        "codes": [
+          "UNKNOWN_TAG",
+          "UNKNOWN_TAG",
+          "UNKNOWN_TAG"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T17",
+        "correct": false,
+        "tokens": 2613,
+        "iterations": null,
+        "lines_touched": null,
+        "codes": [
+          "BAD_ARG_COUNT",
+          "BAD_ARG_COUNT",
+          "BAD_ARG_COUNT"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T18",
+        "correct": false,
+        "tokens": 2358,
+        "iterations": null,
+        "lines_touched": null,
+        "codes": [
+          "BAD_ARG_COUNT",
+          "BAD_ARG_COUNT",
+          "BAD_ARG_COUNT"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T19",
+        "correct": false,
+        "tokens": 2235,
+        "iterations": null,
+        "lines_touched": null,
+        "codes": [
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG",
+          "UNCLOSED_TAG"
+        ],
+        "aborted_no_progress": false
+      },
+      {
+        "task_id": "T20",
+        "correct": false,
+        "tokens": 2142,
+        "iterations": null,
+        "lines_touched": null,
+        "codes": [
+          "BAD_ARG_COUNT",
+          "BAD_ARG_COUNT",
+          "BAD_ARG_COUNT"
+        ],
+        "aborted_no_progress": false
+      }
+    ]
+  },
+  "manifest": {
+    "model": "ollama/qwen2.5-coder:7b-instruct",
+    "model_adapter": "OllamaModel",
+    "temperature": 0.0,
+    "tasks": "imprimatur-eval/tasks.jsonl",
+    "tasks_sha256": "bb68262128d0a50539f2777ebe518e10e981d8e61f41b08de37487fb3bcb697b",
+    "n_tasks": 20,
+    "max_iters": 6,
+    "ablation": true,
+    "arm_c_k": 3,
+    "protocol": "/Users/nickrotich/Desktop/portfolio/projects/python/htvl/docs/EXPERIMENT.md",
+    "protocol_sha256": "c153ed7d8bfe41e7598b07c4c6b030c4057412c0d244e188e5846c2169e0bef0",
+    "recorded_at": "2026-11-08T04:41:51+00:00",
+    "mode": "modern=True everywhere"
+  }
+}

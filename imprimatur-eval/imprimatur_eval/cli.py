@@ -105,7 +105,7 @@ def _cmd_ab(args: argparse.Namespace) -> int:
         "max_iters": args.max_iters,
         "ablation": args.arm_c,
         "arm_c_k": 3,
-        "protocol": _PROTOCOL_PATH,
+        "protocol": str(_PROTOCOL_PATH),
         "protocol_sha256": _sha256(_PROTOCOL_PATH)
         if _PROTOCOL_PATH.exists()
         else None,
@@ -113,7 +113,13 @@ def _cmd_ab(args: argparse.Namespace) -> int:
         "mode": "modern=True everywhere",
     }
     text = render_results(report)
+    Path(args.report).parent.mkdir(parents=True, exist_ok=True)
     Path(args.report).write_text(text, encoding="utf-8")
+    if args.json_out:
+        Path(args.json_out).write_text(
+            json.dumps(report, indent=2), encoding="utf-8"
+        )
+        print(f"wrote {args.json_out}")
     contrast = report.get("contrast", {})
     print(f"wrote {args.report}")
     print(
@@ -157,6 +163,8 @@ def _build_parser() -> argparse.ArgumentParser:
     ab_cmd.add_argument("--report", default="RESULTS.md")
     ab_cmd.add_argument("--max-iters", type=int, default=6)
     ab_cmd.add_argument("--arm-c", action="store_true", help="also run the best-of-k ablation")
+    ab_cmd.add_argument("--json-out", dest="json_out", default=None,
+                        help="also write the raw report dict as JSON")
     ab_cmd.set_defaults(func=_cmd_ab)
     return parser
 

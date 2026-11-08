@@ -252,10 +252,18 @@ def evaluate(
 def _ratio(treatment: ArmReport, control: ArmReport) -> Dict:
     """R = C_treatment / C_control with a paired bootstrap CI."""
     if not treatment.tokens_per_correct or not control.tokens_per_correct:
-        return {"ratio_R": None, "ci95": None, "verdict": "INCONCLUSIVE"}
+        return {
+            "tokens_per_correct_control": control.tokens_per_correct,
+            "tokens_per_correct_treatment": treatment.tokens_per_correct,
+            "ratio_R": None,
+            "ci95": None,
+            "verdict": "INCONCLUSIVE (an arm produced no correct documents)",
+        }
     ratio = treatment.tokens_per_correct / control.tokens_per_correct
     ci = _bootstrap_ratio_ci(treatment.results, control.results)
     return {
+        "tokens_per_correct_control": control.tokens_per_correct,
+        "tokens_per_correct_treatment": treatment.tokens_per_correct,
         "ratio_R": round(ratio, 4),
         "ci95": ci,
         "verdict": _verdict(ratio, ci),

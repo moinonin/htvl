@@ -204,6 +204,28 @@ as a readable, testable, dependency-free compiler:
   **byte for byte**, so existing `.htvl` files and `templates/*.sh` keep
   working unchanged
 
+## Imprimatur: machine-written HTML, graded
+
+On top of the compiler sit three more packages, built to make
+machine-generated documents *provably* well-formed:
+
+| Package | Its one job |
+| --- | --- |
+| [`imprimatur/`](https://github.com/moinonin/htvl/blob/master/imprimatur) | The oracle: HTVL source in, coded, line-local diagnostics out. Pure function, stdlib only, capped input. |
+| [`htvl-mcp/`](https://github.com/moinonin/htvl/blob/master/htvl-mcp) | The oracle in front of any coding agent: two MCP tools over stdio, no filesystem writes. |
+| [`imprimatur-eval/`](https://github.com/moinonin/htvl/blob/master/imprimatur-eval) | The measurement: rejection-sampling datasets, repair traces, and the A/B harness that produces `RESULTS.md`. |
+
+The premise — that a compile-check-repair loop beats single-shot generation —
+is stated as a falsifiable claim and tested against a real local model under a
+pre-registered protocol ([`docs/EXPERIMENT.md`](https://github.com/moinonin/htvl/blob/master/docs/EXPERIMENT.md)). The
+decision number is tokens per correct document. See
+[`RESULTS.md`](https://github.com/moinonin/htvl/blob/master/RESULTS.md) for the
+outcome — including, if that is what the data says, the negative one.
+
+Stage 0's reconnaissance ([`docs/recon.md`](https://github.com/moinonin/htvl/blob/master/docs/recon.md)) and every
+recon-driven deviation ([`docs/decisions.md`](https://github.com/moinonin/htvl/blob/master/docs/decisions.md)) are
+kept in the tree.
+
 ### Development
 
 ```bash

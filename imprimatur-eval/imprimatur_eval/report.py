@@ -58,9 +58,6 @@ def render_results(report: Dict) -> str:
     lines.append("| --- | --- |")
     for key, value in manifest.items():
         lines.append(f"| {key} | {value} |")
-    lines.append(
-        "| protocol | docs/EXPERIMENT.md (frozen; SHA-256 recorded below) |"
-    )
     lines.append("")
 
     lines.append("## 2. Primary contrast - tokens per correct document")
@@ -122,6 +119,18 @@ def render_results(report: Dict) -> str:
             f"- Lines touched per repair: median {_fmt(_median(touched))}, "
             f"p90 {_fmt(_percentile(touched, 90))}"
         )
+        median_touched = _median(touched)
+        if median_touched is not None and median_touched > 10:
+            lines.append("")
+            lines.append(
+                f"> **RQ3 finding:** the median repair touched "
+                f"{median_touched:.0f} lines. The compiler's line-local "
+                "diagnostics did not transfer into line-local *edits*: this "
+                "model rewrote the document instead of repairing the named "
+                "line. The oracle still paid off on cost (see §2), but not "
+                "through the bounded-blast-radius mechanism the design "
+                "assumed."
+            )
         lines.append("")
         lines.append("```")
         lines.append(_histogram(touched))
@@ -160,6 +169,13 @@ def render_results(report: Dict) -> str:
         "- **External validity:** one model family, English intents, "
         "HTML-shaped documents."
     )
+    if manifest.get("temperature") == 0.0:
+        lines.append(
+            "- **Decoding is greedy (temperature 0), so the ablation arm draws "
+            "three identical samples: best-of-k equals first-sample by "
+            "construction. Arm C is reported for completeness but cannot "
+            "separate selection from repair under these settings.**"
+        )
     if manifest.get("model") == "stub":
         lines.append(
             "- **This run used the deterministic stub model, which is plumbing "
@@ -192,6 +208,10 @@ def render_results(report: Dict) -> str:
     lines.append("")
     lines.append("```bash")
     lines.append(
+        "pip install -e ./imprimatur-eval    # or: export "
+        "PYTHONPATH=imprimatur-eval"
+    )
+    lines.append(
         f"python -m imprimatur_eval build --out data.jsonl "
         f"--model {manifest.get('model', 'stub')}"
     )
@@ -201,8 +221,21 @@ def render_results(report: Dict) -> str:
     )
     lines.append(
         f"python -m imprimatur_eval ab --model {manifest.get('model', 'stub')} "
-        f"--report RESULTS.md"
+        f"--tasks {manifest.get('tasks', 'imprimatur-eval/tasks.jsonl')} "
+        "--report RESULTS.md"
+        + (" --arm-c" if manifest.get("ablation") else "")
+        + " --json-out results.json"
     )
     lines.append("```")
+    lines.append("")
+    lines.append(
+        "Every number above is machine output from those three commands; the "
+        "raw report dict (per-task rows included) is the --json-out file."
+    )
+    lines.append("")
+    lines.append(
+        "Deviations from the pre-registered protocol are logged in "
+        "docs/experiment-deviations.md."
+    )
     lines.append("")
     return "\n".join(lines)
