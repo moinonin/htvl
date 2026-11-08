@@ -216,3 +216,42 @@ session ran `initialize`, `tools/list` (exactly `check_htvl` and `list_tags`),
 (`ok=false`, `UNKNOWN_TAG`) and a valid one (`ok=true`, HTML). The adversarial
 prompt-injection case is asserted in the test suite: the text compiles and no
 file appears.
+
+### D19 — The stub must sometimes compile, or R is undefined
+
+**Brief (sketch):** a deterministic stub so CI needs no keys.
+**Found while running the harness:** the first stub injected a defect into
+*every* document, so the control arm's compile rate was 0 and
+`C_control = tokens / 0` was undefined — the primary metric R could not be
+computed at all, and the run printed `C=None R=None`.
+**Did:** the stub now emits a clean document for ~40% of intents (deterministic
+by intent hash). The harness keeps its honest handling of the degenerate case
+(`tokens_per_correct_doc: null`, verdict INCONCLUSIVE) for real models that
+genuinely never compile. This is a stub design fact, not a metric fix: with a
+0% baseline the experiment's decision rule has nothing to divide.
+
+### D20 — A deterministic stub cannot exercise Arm C meaningfully
+
+**Found:** the ablation arm (best-of-k) draws k *identical* samples from a
+deterministic stub, so its compile rate equals the single-sample rate — it
+cannot distinguish "selection" from "repair" (protocol RQ4).
+**Did:** Arm C still runs and is reported (the plumbing is verified), and the
+report states plainly that the ablation contrast is only meaningful with a
+stochastic model. Documented in `imprimatur-eval/README.md`.
+
+### D21 — `python -m imprimatur_eval` needs the path or an install
+
+**Brief (working commands):** `python -m imprimatur_eval build ...` from the
+repository root.
+**Found:** the package lives in `imprimatur-eval/` (hyphenated, per the
+brief's layout), so Python cannot import it from the root by default.
+**Did:** the pytest config adds `imprimatur-eval` and `htvl-mcp` to
+`pythonpath`, so the whole suite runs from a bare checkout; the README notes
+`pip install -e ./imprimatur-eval` (or `uv sync`) for the documented
+`python -m` commands and the `imprimatur-eval` console script.
+
+### D22 — `python -m imprimatur_eval` argument dest
+
+**Found:** argparse `--in` is fine, but the dest cannot be `args.in` — `in`
+is a Python keyword, so `args.in` is a `SyntaxError`.
+**Did:** `dest="in_path"` with `args.in_path`.
