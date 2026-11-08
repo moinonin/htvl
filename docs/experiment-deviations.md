@@ -15,3 +15,12 @@ referenced from the manifest.
 | 5 | Recorded run | Report rendering adds an interpretation paragraph when median `lines_touched` exceeds 10, and a temperature-0 caveat in §5. | The protocol requires distributions, not just means (§8); a median of 71 lines per repair is a substantive finding that a bare histogram hides. | None on the numbers; the interpretation is derived from them. |
 | 6 | Recorded run | `--json-out` persists the raw report dict next to `RESULTS.md`. | So the rendered report can be regenerated from the exact measured data without re-running a 35-minute sweep. | None. |
 | 7 | After the recorded run | The first render of the recorded run omitted `--tasks`, `--arm-c` and `--json-out` from the reproduction block, and the raw JSON was not persisted (a `PosixPath` in the manifest is not JSON-serialisable). Both were fixed in the template/CLI and the sweep was re-run in full, so the committed `RESULTS.md` and `results.json` are unmodified machine output of a single run. | None on any number: the re-run reproduced the first run's figures exactly (control C=84,594.0, treatment C=14,202.8, R=0.1679), which also demonstrates the greedy-decoding determinism the protocol asks to be recorded. |
+
+
+---
+
+## Post-freeze follow-ups (exploratory; no weight on the frozen decision)
+
+| # | What | Result | Consequence |
+| --- | --- | --- | --- |
+| F1 | Window-enforced repair mode (`--strict-window`): repairs re-asked when they edit outside the region the diagnostic permits. | **Negative.** Out-of-region edits 13 -> 12.5 median (nothing), compile 25% -> 20%, tokens/correct doc 14,203 -> 24,496 (+72%). | Prompt discipline does not fix the line-locality gap for this model. The retry is pure overhead. Analysis: `docs/experiments/window-enforcement-analysis.md`; raw data beside it. |
